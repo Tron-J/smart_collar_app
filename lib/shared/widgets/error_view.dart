@@ -1,0 +1,36 @@
+import 'package:flutter/material.dart';
+import 'package:smart_collar_app/core/constants/colors.dart';
+import 'package:smart_collar_app/shared/widgets/teal_button.dart';
+
+class ErrorView extends StatelessWidget {
+  const ErrorView({super.key, required this.message, required this.onRetry});
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.warning_amber_rounded, color: kWarning, size: 40),
+            const SizedBox(height: 12),
+            Text(
+              message,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: kTextSecond),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            TealButton.filled(label: 'Retry', onPressed: onRetry),
+          ],
+        ),
+      ),
+    );
+  }
+}
