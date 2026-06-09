@@ -27,32 +27,32 @@ class JuliusApp extends StatelessWidget {
 
   final GoRouter _router = GoRouter(
     routes: [
-      GoRoute(path: '/', builder: (_, __) => const SplashScreen()),
-      GoRoute(path: '/welcome', builder: (_, __) => const WelcomeScreen()),
-      GoRoute(path: '/login', builder: (_, __) => const LoginScreen()),
-      GoRoute(path: '/register', builder: (_, __) => const RegisterScreen()),
+      GoRoute(path: '/', builder: (_, _) => const SplashScreen()),
+      GoRoute(path: '/welcome', builder: (_, _) => const WelcomeScreen()),
+      GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
+      GoRoute(path: '/register', builder: (_, _) => const RegisterScreen()),
       GoRoute(
         path: '/verify-email',
-        builder: (_, __) => const VerifyEmailScreen(),
+        builder: (_, _) => const VerifyEmailScreen(),
       ),
-      GoRoute(path: '/farm-setup', builder: (_, __) => const FarmSetupScreen()),
-      GoRoute(path: '/add-animal', builder: (_, __) => const AddAnimalScreen()),
-      GoRoute(path: '/pair-collar', builder: (_, __) => const PairCollarScreen()),
-      GoRoute(path: '/wifi-config', builder: (_, __) => const WifiConfigScreen()),
+      GoRoute(path: '/farm-setup', builder: (_, _) => const FarmSetupScreen()),
+      GoRoute(path: '/add-animal', builder: (_, _) => const AddAnimalScreen()),
+      GoRoute(path: '/pair-collar', builder: (_, _) => const PairCollarScreen()),
+      GoRoute(path: '/wifi-config', builder: (_, _) => const WifiConfigScreen()),
       GoRoute(
         path: '/setup-complete',
-        builder: (_, __) => const SetupCompleteScreen(),
+        builder: (_, _) => const SetupCompleteScreen(),
       ),
       ShellRoute(
         builder: (context, state, child) =>
-            JuliusShell(location: state.location, child: child),
+            JuliusShell(location: state.uri.toString(), child: child),
         routes: [
           GoRoute(
             path: '/dashboard',
-            builder: (_, __) => const DashboardScreen(),
+            builder: (_, _) => const DashboardScreen(),
           ),
-          GoRoute(path: '/sensors', builder: (_, __) => const SensorsScreen()),
-          GoRoute(path: '/alerts', builder: (_, __) => const AlertsScreen()),
+          GoRoute(path: '/sensors', builder: (_, _) => const SensorsScreen()),
+          GoRoute(path: '/alerts', builder: (_, _) => const AlertsScreen()),
           GoRoute(
             path: '/alerts/:id',
             builder: (_, state) => AlertDetailScreen(
@@ -61,11 +61,11 @@ class JuliusApp extends StatelessWidget {
           ),
           GoRoute(
             path: '/alerts/thresholds',
-            builder: (_, __) => const ThresholdConfigScreen(),
+            builder: (_, _) => const ThresholdConfigScreen(),
           ),
-          GoRoute(path: '/history', builder: (_, __) => const HistoryScreen()),
-          GoRoute(path: '/settings', builder: (_, __) => const SettingsScreen()),
-          GoRoute(path: '/about', builder: (_, __) => const AboutScreen()),
+          GoRoute(path: '/history', builder: (_, _) => const HistoryScreen()),
+          GoRoute(path: '/settings', builder: (_, _) => const SettingsScreen()),
+          GoRoute(path: '/about', builder: (_, _) => const AboutScreen()),
         ],
       ),
     ],
