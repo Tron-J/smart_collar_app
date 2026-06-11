@@ -20,10 +20,9 @@ class ErrorView extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               message,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: kTextSecond),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),

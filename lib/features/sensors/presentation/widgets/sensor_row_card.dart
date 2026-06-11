@@ -26,7 +26,8 @@ class _SensorRowCardState extends State<SensorRowCard>
     with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
-    final display = widget.valueText ??
+    final display =
+        widget.valueText ??
         (widget.value == null
             ? '--'
             : '${widget.value} ${widget.unit ?? ''}'.trim());
@@ -57,18 +58,16 @@ class _SensorRowCardState extends State<SensorRowCard>
               children: [
                 Text(
                   widget.name,
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge
-                      ?.copyWith(color: kAccentPrimary),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelLarge?.copyWith(color: kAccentPrimary),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   widget.source,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(color: kTextMuted),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: kTextMuted),
                 ),
               ],
             ),
@@ -85,10 +84,9 @@ class _SensorRowCardState extends State<SensorRowCard>
               display,
               key: ValueKey(display),
               style: monoTextStyle(
-                Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(color: kAccentPrimary),
+                Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(color: kAccentPrimary),
               ),
             ),
           ),

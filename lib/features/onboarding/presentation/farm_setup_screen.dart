@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
+import 'package:smart_collar_app/features/onboarding/providers/onboarding_provider.dart';
 import 'package:smart_collar_app/shared/widgets/julius_scaffold.dart';
 import 'package:smart_collar_app/shared/widgets/teal_button.dart';
 
-class FarmSetupScreen extends StatefulWidget {
+class FarmSetupScreen extends ConsumerStatefulWidget {
   const FarmSetupScreen({super.key});
 
   @override
-  State<FarmSetupScreen> createState() => _FarmSetupScreenState();
+  ConsumerState<FarmSetupScreen> createState() => _FarmSetupScreenState();
 }
 
-class _FarmSetupScreenState extends State<FarmSetupScreen> {
+class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _locationController = TextEditingController();
   String _farmType = 'sheep';
+  String? _errorMessage;
 
   @override
   void dispose() {
@@ -26,6 +29,9 @@ class _FarmSetupScreenState extends State<FarmSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final onboardingState = ref.watch(onboardingControllerProvider);
+    final isLoading = onboardingState.isLoading;
+
     return JuliusScaffold(
       appBar: AppBar(
         backgroundColor: kBgDeep,
@@ -45,17 +51,17 @@ class _FarmSetupScreenState extends State<FarmSetupScreen> {
               const SizedBox(height: 6),
               Text(
                 'Your farm profile helps configure alerts and reporting.',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: kTextSecond),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
               ),
               const SizedBox(height: 24),
               TextFormField(
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Farm name'),
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Farm name required' : null,
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Farm name required'
+                    : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -65,10 +71,9 @@ class _FarmSetupScreenState extends State<FarmSetupScreen> {
               const SizedBox(height: 16),
               Text(
                 'Farm type',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: kTextSecond),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
               ),
               const SizedBox(height: 8),
               Wrap(
@@ -95,13 +100,38 @@ class _FarmSetupScreenState extends State<FarmSetupScreen> {
                 ],
               ),
               const SizedBox(height: 24),
+              if (_errorMessage != null) ...[
+                Text(
+                  _errorMessage!,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: kDanger),
+                ),
+                const SizedBox(height: 12),
+              ],
               TealButton.filled(
-                label: 'Continue',
-                onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    context.go('/add-animal');
-                  }
-                },
+                label: isLoading ? 'Saving farm...' : 'Continue',
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        if (_formKey.currentState?.validate() ?? false) {
+                          setState(() => _errorMessage = null);
+                          try {
+                            await ref
+                                .read(onboardingControllerProvider.notifier)
+                                .createFarm(
+                                  name: _nameController.text,
+                                  location: _locationController.text,
+                                  farmType: _farmType,
+                                );
+                            if (!context.mounted) return;
+                            context.go('/add-animal');
+                          } catch (error) {
+                            if (!mounted) return;
+                            setState(() => _errorMessage = error.toString());
+                          }
+                        }
+                      },
               ),
             ],
           ),
@@ -139,8 +169,8 @@ class _SegmentButton extends StatelessWidget {
         child: Text(
           label,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: isSelected ? kBgDeep : kTextSecond,
-              ),
+            color: isSelected ? kBgDeep : kTextSecond,
+          ),
         ),
       ),
     );

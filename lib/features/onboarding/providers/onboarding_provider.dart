@@ -1,0 +1,119 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smart_collar_app/core/providers/app_services.dart';
+import 'package:smart_collar_app/core/providers/session_provider.dart';
+import 'package:smart_collar_app/features/onboarding/data/models/animal.dart';
+import 'package:smart_collar_app/features/onboarding/data/models/collar.dart';
+import 'package:smart_collar_app/features/onboarding/data/models/farm.dart';
+import 'package:smart_collar_app/features/onboarding/data/onboarding_repository.dart';
+
+final onboardingRepositoryProvider = Provider<OnboardingRepository>((ref) {
+  return OnboardingRepository(apiClient: ref.watch(apiClientProvider));
+});
+
+final onboardingControllerProvider =
+    StateNotifierProvider<OnboardingController, AsyncValue<OnboardingState>>(
+      (ref) => OnboardingController(ref),
+    );
+
+class OnboardingState {
+  const OnboardingState({this.farm, this.animal, this.collar});
+
+  final Farm? farm;
+  final Animal? animal;
+  final Collar? collar;
+
+  OnboardingState copyWith({Farm? farm, Animal? animal, Collar? collar}) {
+    return OnboardingState(
+      farm: farm ?? this.farm,
+      animal: animal ?? this.animal,
+      collar: collar ?? this.collar,
+    );
+  }
+}
+
+class OnboardingController extends StateNotifier<AsyncValue<OnboardingState>> {
+  OnboardingController(this._ref) : super(const AsyncData(OnboardingState()));
+
+  final Ref _ref;
+
+  OnboardingRepository get _repository =>
+      _ref.read(onboardingRepositoryProvider);
+
+  Future<Farm> createFarm({
+    required String name,
+    String? location,
+    required String farmType,
+  }) async {
+    final previous = state.value ?? const OnboardingState();
+    state = const AsyncLoading();
+    try {
+      final farm = await _repository.createFarm(
+        name: name,
+        location: location,
+        farmType: farmType,
+      );
+      await saveCurrentFarmId(_ref, farm.id);
+      state = AsyncData(previous.copyWith(farm: farm));
+      return farm;
+    } catch (error, stackTrace) {
+      state = AsyncError(error, stackTrace);
+      rethrow;
+    }
+  }
+
+  Future<Animal> createAnimal({
+    required String animalTag,
+    required String species,
+    required String sex,
+    int? ageMonths,
+    double? weightKg,
+  }) async {
+    final previous = state.value ?? const OnboardingState();
+    final farmId =
+        previous.farm?.id ??
+        await _ref.read(secureStorageProvider).readCurrentFarmId();
+    if (farmId == null) {
+      throw StateError('Create a farm before adding animals.');
+    }
+    state = const AsyncLoading();
+    try {
+      final animal = await _repository.createAnimal(
+        farmId: farmId,
+        animalTag: animalTag,
+        species: species,
+        sex: sex,
+        ageMonths: ageMonths,
+        weightKg: weightKg,
+      );
+      await saveCurrentAnimalId(_ref, animal.id);
+      state = AsyncData(previous.copyWith(animal: animal));
+      return animal;
+    } catch (error, stackTrace) {
+      state = AsyncError(error, stackTrace);
+      rethrow;
+    }
+  }
+
+  Future<Collar> pairCollar(String deviceId) async {
+    final previous = state.value ?? const OnboardingState();
+    final storage = _ref.read(secureStorageProvider);
+    final farmId = previous.farm?.id ?? await storage.readCurrentFarmId();
+    final animalId = previous.animal?.id ?? await storage.readCurrentAnimalId();
+    if (farmId == null || animalId == null) {
+      throw StateError('Add a farm and animal before pairing a collar.');
+    }
+    state = const AsyncLoading();
+    try {
+      final collar = await _repository.pairCollar(
+        deviceId: deviceId,
+        farmId: farmId,
+        animalId: animalId,
+      );
+      state = AsyncData(previous.copyWith(collar: collar));
+      return collar;
+    } catch (error, stackTrace) {
+      state = AsyncError(error, stackTrace);
+      rethrow;
+    }
+  }
+}

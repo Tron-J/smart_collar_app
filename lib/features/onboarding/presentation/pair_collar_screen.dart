@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
+import 'package:smart_collar_app/features/onboarding/providers/onboarding_provider.dart';
 import 'package:smart_collar_app/shared/widgets/julius_scaffold.dart';
 import 'package:smart_collar_app/shared/widgets/teal_button.dart';
 
-class PairCollarScreen extends StatefulWidget {
+class PairCollarScreen extends ConsumerStatefulWidget {
   const PairCollarScreen({super.key});
 
   @override
-  State<PairCollarScreen> createState() => _PairCollarScreenState();
+  ConsumerState<PairCollarScreen> createState() => _PairCollarScreenState();
 }
 
-class _PairCollarScreenState extends State<PairCollarScreen> {
+class _PairCollarScreenState extends ConsumerState<PairCollarScreen> {
   final _formKey = GlobalKey<FormState>();
   final _deviceIdController = TextEditingController();
+  String? _errorMessage;
 
   @override
   void dispose() {
@@ -23,6 +26,9 @@ class _PairCollarScreenState extends State<PairCollarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final onboardingState = ref.watch(onboardingControllerProvider);
+    final isLoading = onboardingState.isLoading;
+
     return JuliusScaffold(
       appBar: AppBar(
         backgroundColor: kBgDeep,
@@ -42,10 +48,9 @@ class _PairCollarScreenState extends State<PairCollarScreen> {
               const SizedBox(height: 6),
               Text(
                 'Scan the QR code on the collar or enter the device ID.',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: kTextSecond),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
               ),
               const SizedBox(height: 20),
               Container(
@@ -61,10 +66,9 @@ class _PairCollarScreenState extends State<PairCollarScreen> {
                     const SizedBox(height: 8),
                     Text(
                       'QR scanning will be enabled with camera access.',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: kTextSecond),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: kTextSecond),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -79,13 +83,34 @@ class _PairCollarScreenState extends State<PairCollarScreen> {
                     : null,
               ),
               const SizedBox(height: 24),
+              if (_errorMessage != null) ...[
+                Text(
+                  _errorMessage!,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: kDanger),
+                ),
+                const SizedBox(height: 12),
+              ],
               TealButton.filled(
-                label: 'Pair collar',
-                onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    context.go('/wifi-config');
-                  }
-                },
+                label: isLoading ? 'Pairing collar...' : 'Pair collar',
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        if (_formKey.currentState?.validate() ?? false) {
+                          setState(() => _errorMessage = null);
+                          try {
+                            await ref
+                                .read(onboardingControllerProvider.notifier)
+                                .pairCollar(_deviceIdController.text);
+                            if (!context.mounted) return;
+                            context.go('/wifi-config');
+                          } catch (error) {
+                            if (!mounted) return;
+                            setState(() => _errorMessage = error.toString());
+                          }
+                        }
+                      },
               ),
             ],
           ),

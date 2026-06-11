@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
+import 'package:smart_collar_app/features/auth/providers/auth_provider.dart';
 import 'package:smart_collar_app/shared/widgets/julius_scaffold.dart';
 import 'package:smart_collar_app/shared/widgets/teal_button.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _phoneController = TextEditingController();
+  String? _errorMessage;
   bool _obscure = true;
 
   @override
@@ -30,6 +33,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authControllerProvider);
+    final isLoading = authState.isLoading;
+
     return JuliusScaffold(
       appBar: AppBar(
         backgroundColor: kBgDeep,
@@ -49,10 +55,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 6),
               Text(
                 'Create your farmer profile to begin onboarding.',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: kTextSecond),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
               ),
               const SizedBox(height: 24),
               TextFormField(
@@ -97,13 +102,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 keyboardType: TextInputType.phone,
               ),
               const SizedBox(height: 24),
+              if (_errorMessage != null) ...[
+                Text(
+                  _errorMessage!,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: kDanger),
+                ),
+                const SizedBox(height: 12),
+              ],
               TealButton.filled(
-                label: 'Continue',
-                onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    context.go('/verify-email');
-                  }
-                },
+                label: isLoading ? 'Creating account...' : 'Continue',
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        if (_formKey.currentState?.validate() ?? false) {
+                          setState(() => _errorMessage = null);
+                          try {
+                            await ref
+                                .read(authControllerProvider.notifier)
+                                .register(
+                                  fullName: _nameController.text,
+                                  email: _emailController.text,
+                                  password: _passwordController.text,
+                                  phone: _phoneController.text,
+                                );
+                            if (!context.mounted) return;
+                            context.go('/verify-email');
+                          } catch (error) {
+                            if (!mounted) return;
+                            setState(() => _errorMessage = error.toString());
+                          }
+                        }
+                      },
               ),
               const SizedBox(height: 12),
               TextButton(

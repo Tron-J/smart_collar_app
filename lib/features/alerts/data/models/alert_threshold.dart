@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_annotation_target
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'alert_threshold.freezed.dart';
@@ -5,6 +7,7 @@ part 'alert_threshold.g.dart';
 
 @freezed
 class AlertThreshold with _$AlertThreshold {
+  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory AlertThreshold({
     required String id,
     required String farmId,

@@ -25,17 +25,13 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen> {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        Text(
-          'Alerts',
-          style: Theme.of(context).textTheme.headlineMedium,
-        ),
+        Text('Alerts', style: Theme.of(context).textTheme.headlineMedium),
         const SizedBox(height: 6),
         Text(
           'Monitor critical health events as they occur.',
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(color: kTextSecond),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
         ),
         const SizedBox(height: 16),
         Wrap(
@@ -148,8 +144,8 @@ class _FilterChip extends StatelessWidget {
         child: Text(
           label,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: isActive ? kBgDeep : kTextSecond,
-              ),
+            color: isActive ? kBgDeep : kTextSecond,
+          ),
         ),
       ),
     );
@@ -183,7 +179,8 @@ class _EmptyState extends StatelessWidget {
       _AlertFilter.warning => 'No warning alerts right now.',
       _AlertFilter.info => 'No info alerts right now.',
       _AlertFilter.resolved => 'No resolved alerts yet.',
-      _AlertFilter.all => 'No alerts yet. We will surface warnings as they occur.',
+      _AlertFilter.all =>
+        'No alerts yet. We will surface warnings as they occur.',
     };
 
     return Container(
@@ -199,10 +196,9 @@ class _EmptyState extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             label,
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium
-                ?.copyWith(color: kTextSecond),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
             textAlign: TextAlign.center,
           ),
         ],

@@ -131,10 +131,9 @@ class _NavItem extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 label,
-                style: Theme.of(context)
-                    .textTheme
-                    .labelSmall
-                    ?.copyWith(color: color),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelSmall?.copyWith(color: color),
               ),
               const SizedBox(height: 4),
               Container(

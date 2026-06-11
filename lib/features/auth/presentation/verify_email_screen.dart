@@ -46,10 +46,9 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
             const SizedBox(height: 6),
             Text(
               'We sent a verification code to your email address.',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: kTextSecond),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
             ),
             const SizedBox(height: 24),
             Row(

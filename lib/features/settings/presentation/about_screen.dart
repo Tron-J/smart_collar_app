@@ -29,10 +29,9 @@ class AboutScreen extends StatelessWidget {
           'and physical activity of livestock in real time.\n\n'
           'Contact: [email]\n'
           'GitHub: [link]',
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(color: kTextSecond, height: 1.4),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: kTextSecond, height: 1.4),
         ),
       ],
     );

@@ -44,20 +44,18 @@ class SensorCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(color: kTextMuted),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: kTextMuted),
                   ),
                 ],
               ),
               Text(
                 '$valueText $unit',
                 style: monoTextStyle(
-                  Theme.of(context)
-                      .textTheme
-                      .headlineSmall
-                      ?.copyWith(color: kAccentPrimary),
+                  Theme.of(
+                    context,
+                  ).textTheme.headlineSmall?.copyWith(color: kAccentPrimary),
                 ),
               ),
             ],
@@ -65,15 +63,11 @@ class SensorCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             detail,
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(color: kTextSecond),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: kTextSecond),
           ),
-          if (chart != null) ...[
-            const SizedBox(height: 12),
-            chart!,
-          ],
+          if (chart != null) ...[const SizedBox(height: 12), chart!],
         ],
       ),
     );

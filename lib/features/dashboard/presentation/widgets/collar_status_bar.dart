@@ -26,18 +26,16 @@ class CollarStatusBar extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             isConnected ? 'Collar online' : 'Collar offline',
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(color: kTextSecond),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: kTextSecond),
           ),
           const Spacer(),
           Text(
             'Last ping: --',
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(color: kTextMuted),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: kTextMuted),
           ),
         ],
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
 import 'package:smart_collar_app/core/constants/typography.dart';
+import 'package:smart_collar_app/features/auth/presentation/account_screen.dart';
 import 'package:smart_collar_app/features/auth/presentation/login_screen.dart';
 import 'package:smart_collar_app/features/auth/presentation/register_screen.dart';
 import 'package:smart_collar_app/features/auth/presentation/splash_screen.dart';
@@ -10,6 +11,8 @@ import 'package:smart_collar_app/features/auth/presentation/welcome_screen.dart'
 import 'package:smart_collar_app/features/alerts/presentation/alerts_screen.dart';
 import 'package:smart_collar_app/features/alerts/presentation/alert_detail_screen.dart';
 import 'package:smart_collar_app/features/alerts/presentation/threshold_config_screen.dart';
+import 'package:smart_collar_app/features/herd/presentation/animal_detail_screen.dart';
+import 'package:smart_collar_app/features/herd/presentation/herd_screen.dart';
 import 'package:smart_collar_app/features/onboarding/presentation/add_animal_screen.dart';
 import 'package:smart_collar_app/features/onboarding/presentation/farm_setup_screen.dart';
 import 'package:smart_collar_app/features/onboarding/presentation/pair_collar_screen.dart';
@@ -29,6 +32,7 @@ class JuliusApp extends StatelessWidget {
     routes: [
       GoRoute(path: '/', builder: (_, _) => const SplashScreen()),
       GoRoute(path: '/welcome', builder: (_, _) => const WelcomeScreen()),
+      GoRoute(path: '/account', builder: (_, _) => const AccountScreen()),
       GoRoute(path: '/login', builder: (_, _) => const LoginScreen()),
       GoRoute(path: '/register', builder: (_, _) => const RegisterScreen()),
       GoRoute(
@@ -37,8 +41,14 @@ class JuliusApp extends StatelessWidget {
       ),
       GoRoute(path: '/farm-setup', builder: (_, _) => const FarmSetupScreen()),
       GoRoute(path: '/add-animal', builder: (_, _) => const AddAnimalScreen()),
-      GoRoute(path: '/pair-collar', builder: (_, _) => const PairCollarScreen()),
-      GoRoute(path: '/wifi-config', builder: (_, _) => const WifiConfigScreen()),
+      GoRoute(
+        path: '/pair-collar',
+        builder: (_, _) => const PairCollarScreen(),
+      ),
+      GoRoute(
+        path: '/wifi-config',
+        builder: (_, _) => const WifiConfigScreen(),
+      ),
       GoRoute(
         path: '/setup-complete',
         builder: (_, _) => const SetupCompleteScreen(),
@@ -54,14 +64,19 @@ class JuliusApp extends StatelessWidget {
           GoRoute(path: '/sensors', builder: (_, _) => const SensorsScreen()),
           GoRoute(path: '/alerts', builder: (_, _) => const AlertsScreen()),
           GoRoute(
-            path: '/alerts/:id',
-            builder: (_, state) => AlertDetailScreen(
-              alertId: state.pathParameters['id'] ?? '',
-            ),
-          ),
-          GoRoute(
             path: '/alerts/thresholds',
             builder: (_, _) => const ThresholdConfigScreen(),
+          ),
+          GoRoute(
+            path: '/alerts/:id',
+            builder: (_, state) =>
+                AlertDetailScreen(alertId: state.pathParameters['id'] ?? ''),
+          ),
+          GoRoute(path: '/herd', builder: (_, _) => const HerdScreen()),
+          GoRoute(
+            path: '/herd/:id',
+            builder: (_, state) =>
+                AnimalDetailScreen(animalId: state.pathParameters['id'] ?? ''),
           ),
           GoRoute(path: '/history', builder: (_, _) => const HistoryScreen()),
           GoRoute(path: '/settings', builder: (_, _) => const SettingsScreen()),

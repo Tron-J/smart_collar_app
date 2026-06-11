@@ -33,10 +33,9 @@ class SetupCompleteScreen extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               'Your collar is ready to stream data once it is online.',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: kTextSecond),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
             ),
             const SizedBox(height: 24),
             _SummaryRow(label: 'Farm', value: 'Not set'),
@@ -70,10 +69,9 @@ class _SummaryRow extends StatelessWidget {
         children: [
           Text(
             label,
-            style: Theme.of(context)
-                .textTheme
-                .bodyMedium
-                ?.copyWith(color: kTextSecond),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
           ),
           Text(value, style: Theme.of(context).textTheme.bodyMedium),
         ],

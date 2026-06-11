@@ -15,10 +15,9 @@ class HrChartWidget extends StatelessWidget {
       child: Center(
         child: Text(
           'No heart rate data yet',
-          style: Theme.of(context)
-              .textTheme
-              .bodySmall
-              ?.copyWith(color: kTextMuted),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: kTextMuted),
         ),
       ),
     );

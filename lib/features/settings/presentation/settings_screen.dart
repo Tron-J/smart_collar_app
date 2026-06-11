@@ -10,21 +10,18 @@ class SettingsScreen extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        Text(
-          'Settings',
-          style: Theme.of(context).textTheme.headlineMedium,
-        ),
+        Text('Settings', style: Theme.of(context).textTheme.headlineMedium),
         const SizedBox(height: 6),
         Text(
           'Manage your profile, farm, and collar preferences.',
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(color: kTextSecond),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
         ),
         const SizedBox(height: 20),
         _SectionTile(title: 'Profile'),
         _SectionTile(title: 'Farm'),
+        _SectionTile(title: 'Herd', onTap: () => context.go('/herd')),
         _SectionTile(title: 'Collar management'),
         _SectionTile(title: 'Notifications'),
         _SectionTile(

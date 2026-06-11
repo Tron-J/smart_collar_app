@@ -32,56 +32,50 @@ class AlertCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   _labelForType(alert.alertType),
-                  style: Theme.of(context)
-                      .textTheme
-                      .labelLarge
-                      ?.copyWith(color: color),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelLarge?.copyWith(color: color),
                 ),
                 const Spacer(),
                 Text(
                   date,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(color: kTextMuted),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: kTextMuted),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             Text(
               alert.message,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: kTextSecond),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
             ),
             const SizedBox(height: 10),
             Row(
               children: [
                 Text(
                   'Animal: ${_shortId(alert.animalId)}',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(color: kTextMuted),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: kTextMuted),
                 ),
                 const Spacer(),
                 if (alert.tempAtAlert != null)
                   Text(
                     'Temp ${alert.tempAtAlert}°C',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(color: kTextMuted),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: kTextMuted),
                   ),
                 if (alert.hrAtAlert != null) ...[
                   const SizedBox(width: 8),
                   Text(
                     'HR ${alert.hrAtAlert} bpm',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(color: kTextMuted),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: kTextMuted),
                   ),
                 ],
               ],

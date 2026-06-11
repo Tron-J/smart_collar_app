@@ -17,6 +17,7 @@ class DashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(websocketStreamProvider);
+    ref.watch(latestReadingProvider);
     final readingsState = ref.watch(liveReadingsProvider);
     final latest = readingsState.latest;
     final updatedLabel = readingsState.lastUpdated == null
@@ -29,98 +30,96 @@ class DashboardScreen extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-          _TopBar(
-            onDashboard: () {},
-            onSensors: () => context.go('/sensors'),
-            onAlerts: () => context.go('/alerts'),
-            onAbout: () => context.go('/about'),
-          ),
-          const SizedBox(height: 16),
-          PprRiskCard(score: latest?.pprRiskScore),
-          const SizedBox(height: 20),
-          CollarStatusBar(isConnected: readingsState.isConnected),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Sensor readings',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              Row(
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: kTextMuted,
-                      shape: BoxShape.circle,
-                    ),
+        _TopBar(
+          onDashboard: () {},
+          onSensors: () => context.go('/sensors'),
+          onAlerts: () => context.go('/alerts'),
+          onAbout: () => context.go('/about'),
+        ),
+        const SizedBox(height: 16),
+        PprRiskCard(score: latest?.pprRiskScore),
+        const SizedBox(height: 20),
+        CollarStatusBar(isConnected: readingsState.isConnected),
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Sensor readings',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            Row(
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: kTextMuted,
+                    shape: BoxShape.circle,
                   ),
-                  const SizedBox(width: 6),
-                  Text(
-                    updatedLabel,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(color: kTextMuted),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          SensorCard(
-            title: 'Body Temperature',
-            subtitle: 'DS18B20',
-            value: latest?.tempC,
-            unit: '°C',
-            detail: 'Normal range 38.5–39.7°C',
-            chart: const TempChartWidget(),
-          ),
-          const SizedBox(height: 12),
-          SensorCard(
-            title: 'Heart Rate',
-            subtitle: 'MAX30102 PULSE SENSOR',
-            value: latest?.heartRateBpm,
-            unit: 'bpm',
-            detail: 'Typical resting: 70–90 bpm',
-            chart: const HrChartWidget(),
-          ),
-          const SizedBox(height: 12),
-          SensorCard(
-            title: 'Activity Level',
-            subtitle: 'MPU6050 ACCELEROMETER',
-            value: latest?.activityIndex,
-            unit: '%',
-            detail: 'Composite motion intensity',
-            chart: const ActivityBarWidget(),
-          ),
-          const SizedBox(height: 12),
-          SensorCard(
-            title: 'Accelerometer Axes',
-            subtitle: 'MPU6050 · M/S²',
-            value: latest?.accelZ,
-            unit: 'z-axis g',
-            detail: accelDetail,
-          ),
-          const SizedBox(height: 12),
-          SensorCard(
-            title: 'Battery',
-            subtitle: '3.7V LIPO · 1200MAH',
-            value: latest?.batteryPct,
-            unit: '%',
-            detail: 'Deep-sleep enabled',
-          ),
-          const SizedBox(height: 12),
-          SensorCard(
-            title: 'Wi-Fi Signal',
-            subtitle: 'ESP32 ONBOARD',
-            value: latest?.wifiRssi,
-            unit: '%',
-            detail: 'Edge alerts work offline too',
-          ),
-        ],
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  updatedLabel,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: kTextMuted),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        SensorCard(
+          title: 'Body Temperature',
+          subtitle: 'DS18B20',
+          value: latest?.tempC,
+          unit: '°C',
+          detail: 'Normal range 38.5–39.7°C',
+          chart: const TempChartWidget(),
+        ),
+        const SizedBox(height: 12),
+        SensorCard(
+          title: 'Heart Rate',
+          subtitle: 'MAX30102 PULSE SENSOR',
+          value: latest?.heartRateBpm,
+          unit: 'bpm',
+          detail: 'Typical resting: 70–90 bpm',
+          chart: const HrChartWidget(),
+        ),
+        const SizedBox(height: 12),
+        SensorCard(
+          title: 'Activity Level',
+          subtitle: 'MPU6050 ACCELEROMETER',
+          value: latest?.activityIndex,
+          unit: '%',
+          detail: 'Composite motion intensity',
+          chart: const ActivityBarWidget(),
+        ),
+        const SizedBox(height: 12),
+        SensorCard(
+          title: 'Accelerometer Axes',
+          subtitle: 'MPU6050 · M/S²',
+          value: latest?.accelZ,
+          unit: 'z-axis g',
+          detail: accelDetail,
+        ),
+        const SizedBox(height: 12),
+        SensorCard(
+          title: 'Battery',
+          subtitle: '3.7V LIPO · 1200MAH',
+          value: latest?.batteryPct,
+          unit: '%',
+          detail: 'Deep-sleep enabled',
+        ),
+        const SizedBox(height: 12),
+        SensorCard(
+          title: 'Wi-Fi Signal',
+          subtitle: 'ESP32 ONBOARD',
+          value: latest?.wifiRssi,
+          unit: '%',
+          detail: 'Edge alerts work offline too',
+        ),
       ],
     );
   }
@@ -156,10 +155,7 @@ class _TopBar extends StatelessWidget {
               child: const Center(
                 child: Text(
                   'J',
-                  style: TextStyle(
-                    color: kBgDeep,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: TextStyle(color: kBgDeep, fontWeight: FontWeight.w700),
                 ),
               ),
             ),
@@ -173,10 +169,9 @@ class _TopBar extends StatelessWidget {
                 ),
                 Text(
                   'PPR Early Detection · ESP32',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(color: kTextSecond),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: kTextSecond),
                 ),
               ],
             ),
@@ -222,8 +217,8 @@ class _NavChip extends StatelessWidget {
         child: Text(
           label,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: isActive ? kBgDeep : kTextSecond,
-              ),
+            color: isActive ? kBgDeep : kTextSecond,
+          ),
         ),
       ),
     );

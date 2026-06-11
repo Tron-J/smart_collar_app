@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_annotation_target
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'sensor_reading.freezed.dart';
@@ -5,6 +7,7 @@ part 'sensor_reading.g.dart';
 
 @freezed
 class SensorReading with _$SensorReading {
+  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory SensorReading({
     required String collarId,
     required String animalId,

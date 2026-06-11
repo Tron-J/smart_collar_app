@@ -27,10 +27,9 @@ class WifiConfigScreen extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               'Enable Bluetooth and connect to the collar to send Wi-Fi details.',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: kTextSecond),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
             ),
             const SizedBox(height: 20),
             Container(
@@ -45,20 +44,18 @@ class WifiConfigScreen extends StatelessWidget {
                 children: [
                   Text(
                     'Connection status',
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelLarge
-                        ?.copyWith(color: kTextSecond),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.labelLarge?.copyWith(color: kTextSecond),
                   ),
                   const SizedBox(height: 8),
                   const StatusBadge(label: 'Searching'),
                   const SizedBox(height: 12),
                   Text(
                     'We will show nearby JuliusCollar devices here.',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.copyWith(color: kTextMuted),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: kTextMuted),
                   ),
                 ],
               ),

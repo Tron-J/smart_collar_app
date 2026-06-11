@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
+import 'package:smart_collar_app/features/onboarding/providers/onboarding_provider.dart';
 import 'package:smart_collar_app/shared/widgets/julius_scaffold.dart';
 import 'package:smart_collar_app/shared/widgets/teal_button.dart';
 
-class AddAnimalScreen extends StatefulWidget {
+class AddAnimalScreen extends ConsumerStatefulWidget {
   const AddAnimalScreen({super.key});
 
   @override
-  State<AddAnimalScreen> createState() => _AddAnimalScreenState();
+  ConsumerState<AddAnimalScreen> createState() => _AddAnimalScreenState();
 }
 
-class _AddAnimalScreenState extends State<AddAnimalScreen> {
+class _AddAnimalScreenState extends ConsumerState<AddAnimalScreen> {
   final _formKey = GlobalKey<FormState>();
   final _tagController = TextEditingController();
   final _ageController = TextEditingController();
   final _weightController = TextEditingController();
   String _species = 'sheep';
   String _sex = 'female';
+  String? _errorMessage;
 
   @override
   void dispose() {
@@ -29,6 +32,9 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final onboardingState = ref.watch(onboardingControllerProvider);
+    final isLoading = onboardingState.isLoading;
+
     return JuliusScaffold(
       appBar: AppBar(
         backgroundColor: kBgDeep,
@@ -48,10 +54,9 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
               const SizedBox(height: 6),
               Text(
                 'Add the animal tag and basic details for monitoring.',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: kTextSecond),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
               ),
               const SizedBox(height: 24),
               TextFormField(
@@ -88,13 +93,44 @@ class _AddAnimalScreenState extends State<AddAnimalScreen> {
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 24),
+              if (_errorMessage != null) ...[
+                Text(
+                  _errorMessage!,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: kDanger),
+                ),
+                const SizedBox(height: 12),
+              ],
               TealButton.filled(
-                label: 'Continue to collar pairing',
-                onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    context.go('/pair-collar');
-                  }
-                },
+                label: isLoading
+                    ? 'Adding animal...'
+                    : 'Continue to collar pairing',
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        if (_formKey.currentState?.validate() ?? false) {
+                          setState(() => _errorMessage = null);
+                          try {
+                            await ref
+                                .read(onboardingControllerProvider.notifier)
+                                .createAnimal(
+                                  animalTag: _tagController.text,
+                                  species: _species,
+                                  sex: _sex,
+                                  ageMonths: int.tryParse(_ageController.text),
+                                  weightKg: double.tryParse(
+                                    _weightController.text,
+                                  ),
+                                );
+                            if (!context.mounted) return;
+                            context.go('/pair-collar');
+                          } catch (error) {
+                            if (!mounted) return;
+                            setState(() => _errorMessage = error.toString());
+                          }
+                        }
+                      },
               ),
             ],
           ),
@@ -124,21 +160,22 @@ class _SegmentedRow extends StatelessWidget {
       children: [
         Text(
           label,
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(color: kTextSecond),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
         ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           children: options
-              .map((option) => _SegmentButton(
-                    label: option.toUpperCase(),
-                    value: option,
-                    groupValue: value,
-                    onChanged: onChanged,
-                  ))
+              .map(
+                (option) => _SegmentButton(
+                  label: option.toUpperCase(),
+                  value: option,
+                  groupValue: value,
+                  onChanged: onChanged,
+                ),
+              )
               .toList(),
         ),
       ],
@@ -174,8 +211,8 @@ class _SegmentButton extends StatelessWidget {
         child: Text(
           label,
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: isSelected ? kBgDeep : kTextSecond,
-              ),
+            color: isSelected ? kBgDeep : kTextSecond,
+          ),
         ),
       ),
     );

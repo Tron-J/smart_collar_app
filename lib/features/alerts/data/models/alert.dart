@@ -1,27 +1,19 @@
+// ignore_for_file: invalid_annotation_target
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'alert.freezed.dart';
 part 'alert.g.dart';
 
 @JsonEnum(fieldRename: FieldRename.snake)
-enum AlertType {
-  highTemp,
-  lowHr,
-  highHr,
-  lethargy,
-  pprRisk,
-  offline,
-}
+enum AlertType { highTemp, lowHr, highHr, lethargy, pprRisk, offline }
 
 @JsonEnum(fieldRename: FieldRename.snake)
-enum AlertSeverity {
-  info,
-  warning,
-  critical,
-}
+enum AlertSeverity { info, warning, critical }
 
 @freezed
 class Alert with _$Alert {
+  @JsonSerializable(fieldRename: FieldRename.snake)
   const factory Alert({
     required String id,
     required String collarId,

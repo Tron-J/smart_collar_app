@@ -34,10 +34,10 @@ class PprRiskCard extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 'LIVE MONITORING · ANIMAL #—',
-                style: Theme.of(context)
-                    .textTheme
-                    .labelSmall
-                    ?.copyWith(color: kTextMuted, letterSpacing: 1.2),
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: kTextMuted,
+                  letterSpacing: 1.2,
+                ),
               ),
             ],
           ),
@@ -52,23 +52,22 @@ class PprRiskCard extends StatelessWidget {
                     Text(
                       'Status: $status',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: statusColor,
-                            fontWeight: FontWeight.w700,
-                          ),
+                        color: statusColor,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     const SizedBox(height: 10),
                     Text(
                       score == null ? '--' : score.toString(),
                       style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     Text(
                       'Risk score out of 100',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: kTextMuted),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: kTextMuted),
                     ),
                   ],
                 ),
@@ -77,15 +76,15 @@ class PprRiskCard extends StatelessWidget {
                 width: 54,
                 height: 54,
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.15),
+                  color: statusColor.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   status == 'Healthy'
                       ? Icons.verified
                       : status == 'Warning'
-                          ? Icons.warning_amber_rounded
-                          : Icons.warning_rounded,
+                      ? Icons.warning_amber_rounded
+                      : Icons.warning_rounded,
                   color: statusColor,
                 ),
               ),
@@ -94,19 +93,17 @@ class PprRiskCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             'Edge-computed risk score combining body temperature, heart rate and motion to detect early signs of Peste des Petits Ruminants.',
-            style: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.copyWith(color: kTextSecond),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: kTextSecond),
           ),
           if (score == null) ...[
             const SizedBox(height: 10),
             Text(
               'Waiting for the collar to stream live data.',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(color: kTextMuted),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: kTextMuted),
             ),
           ],
         ],
