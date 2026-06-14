@@ -317,7 +317,7 @@ async function ensurePublicUser(client, user) {
   if (!firstRow(tableResult)?.users_table) return;
 
   const columnsResult = await client.query(
-    `SELECT column_name, is_nullable, column_default
+    `SELECT column_name, is_nullable, column_default, data_type
      FROM information_schema.columns
      WHERE table_schema = 'public' AND table_name = 'users'`
   );
@@ -330,18 +330,22 @@ async function ensurePublicUser(client, user) {
   if (columnNames.has('full_name')) values.full_name = user.email ?? 'Smart Collar user';
   if (columnNames.has('name')) values.name = user.email ?? 'Smart Collar user';
   if (columnNames.has('display_name')) values.display_name = user.email ?? 'Smart Collar user';
+  if (columnNames.has('password_hash')) values.password_hash = 'supabase-auth';
+  if (columnNames.has('auth_provider')) values.auth_provider = 'supabase';
+  if (columnNames.has('provider')) values.provider = 'google';
+  if (columnNames.has('username')) values.username = user.email ?? user.id;
   if (columnNames.has('created_at')) values.created_at = new Date();
   if (columnNames.has('updated_at')) values.updated_at = new Date();
 
-  const missingRequiredColumn = columns.find(
-    (column) =>
+  for (const column of columns) {
+    if (
       column.column_name !== 'id' &&
       column.is_nullable === 'NO' &&
       column.column_default == null &&
       !Object.hasOwn(values, column.column_name)
-  );
-  if (missingRequiredColumn) {
-    throw new Error(`Cannot create user profile because users.${missingRequiredColumn.column_name} is required`);
+    ) {
+      values[column.column_name] = fallbackUserValue(column, user);
+    }
   }
 
   const insertColumns = Object.keys(values);
@@ -357,4 +361,13 @@ async function ensurePublicUser(client, user) {
      ON CONFLICT (id) ${conflictAction}`,
     insertColumns.map((column) => values[column])
   );
+}
+
+function fallbackUserValue(column, user) {
+  if (column.column_name.endsWith('_at') || column.data_type.includes('timestamp')) return new Date();
+  if (column.data_type === 'boolean') return false;
+  if (column.data_type === 'integer' || column.data_type === 'bigint' || column.data_type === 'smallint') return 0;
+  if (column.data_type === 'numeric' || column.data_type === 'real' || column.data_type === 'double precision') return 0;
+  if (column.data_type === 'uuid') return user.id;
+  return user.email ?? 'supabase-auth';
 }
