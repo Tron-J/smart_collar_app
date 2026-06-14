@@ -1,6 +1,6 @@
 import express from 'express';
 import { requireAuth } from './auth.js';
-import { firstRow, query } from './db.js';
+import { firstRow, pool, query } from './db.js';
 
 export const router = express.Router();
 
@@ -26,23 +26,44 @@ router.get('/health/db', async (_req, res, next) => {
 });
 
 router.get('/health/farm-write', async (_req, res, next) => {
+  const client = await pool.connect();
   try {
-    await query('BEGIN');
-    const result = await query(
+    await client.query('BEGIN');
+    const result = await client.query(
       `INSERT INTO farms (user_id, name, location, farm_type)
        VALUES ($1,$2,$3,$4)
        RETURNING id, user_id, name, location, farm_type`,
       ['00000000-0000-0000-0000-000000000000', 'Health check farm', 'Health check', 'mixed']
     );
-    await query('ROLLBACK');
+    await client.query('ROLLBACK');
     res.json({ ok: true, data: firstRow(result) });
   } catch (error) {
     try {
-      await query('ROLLBACK');
+      await client.query('ROLLBACK');
     } catch {
       // Ignore rollback failures so the original database error is returned.
     }
-    next(error);
+    console.error('Farm write health check failed', {
+      message: error?.message,
+      code: error?.code,
+      table: error?.table,
+      column: error?.column,
+      constraint: error?.constraint,
+      detail: error?.detail
+    });
+    res.status(500).json({
+      ok: false,
+      error: {
+        message: error?.message,
+        code: error?.code,
+        table: error?.table,
+        column: error?.column,
+        constraint: error?.constraint,
+        detail: error?.detail
+      }
+    });
+  } finally {
+    client.release();
   }
 });
 
