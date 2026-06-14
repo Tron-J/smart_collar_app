@@ -8,6 +8,23 @@ router.get('/health', (_req, res) => {
   res.json({ ok: true });
 });
 
+router.get('/health/db', async (_req, res, next) => {
+  try {
+    const result = await query(
+      `SELECT
+        to_regclass('public.farms') AS farms,
+        to_regclass('public.animals') AS animals,
+        to_regclass('public.collars') AS collars,
+        to_regclass('public.alert_thresholds') AS alert_thresholds,
+        to_regclass('public.sensor_readings') AS sensor_readings,
+        to_regclass('public.alerts') AS alerts`
+    );
+    res.json({ ok: true, data: firstRow(result) });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.use(requireAuth);
 
 router.get('/system/version', (_req, res) => {

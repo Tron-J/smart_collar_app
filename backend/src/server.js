@@ -11,9 +11,20 @@ const app = express();
 app.use(helmet());
 app.use(cors({ origin: config.corsOrigin }));
 app.use(express.json({ limit: '1mb' }));
+app.use((req, _res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
 app.use(router);
 app.use((error, _req, res, _next) => {
-  console.error(error);
+  console.error('Request failed', {
+    message: error?.message,
+    code: error?.code,
+    table: error?.table,
+    column: error?.column,
+    constraint: error?.constraint,
+    detail: error?.detail
+  });
   if (error?.code === '23514') {
     return res.status(400).json({ message: 'Invalid value submitted' });
   }
