@@ -1,4 +1,4 @@
-# Julius Collar Firmware
+# Smart Collar Firmware
 
 `animal_tracker_mqtt/animal_tracker_mqtt.ino` is the MQTT version of the collar firmware for the Flutter/backend stack in this repo.
 
@@ -17,15 +17,15 @@ Update these constants in the sketch:
 
 ```cpp
 const char *DEVICE_ID = "SSTU234IX";
-const char *WIFI_SSID = "CHANGE_ME";
-const char *WIFI_PASSWORD = "CHANGE_ME";
+const char *WIFI_SSID = "your_wifi_name";
+const char *WIFI_PASSWORD = "your_wifi_password";
 const char *MQTT_HOST = "8e81645ecec344ecb81e049f54d241db.s1.eu.hivemq.cloud";
 const uint16_t MQTT_PORT = 8883;
 const char *MQTT_USER = "your_hivemq_username";
 const char *MQTT_PASSWORD = "your_hivemq_password";
 ```
 
-The backend expects a paired collar row whose `device_id` matches `DEVICE_ID`.
+Every physical collar must have a unique `DEVICE_ID`. When the collar first connects, the backend records it as an unpaired collar. The manufacturer page can then generate the QR payload for that same ID.
 
 ## MQTT Topics
 
@@ -66,7 +66,25 @@ The firmware publishes:
 }
 ```
 
-The backend also accepts the older Firebase-style field names from the original sketch, but MQTT is the production path for live app updates.
+The firmware also publishes `collars/{DEVICE_ID}/status` as a retained message so the backend can list online/unpaired collars for QR creation.
+
+## QR Pairing Flow
+
+1. Flash the collar with a unique `DEVICE_ID`.
+2. Power the collar on and let it connect to Wi-Fi/MQTT.
+3. Open the backend manufacturer page:
+
+```text
+https://smart-collar-app-backend.onrender.com/manufacturer/
+```
+
+4. Copy or print the QR payload for that collar:
+
+```text
+smartcollar://app/pair-collar?device_id=DEVICE_ID
+```
+
+5. The farmer scans the QR with the phone camera. The app opens the pair screen with the Device ID already filled.
 
 ## Test Without Hardware
 
