@@ -72,6 +72,7 @@ router.get('/health/farm-write', async (_req, res, next) => {
 });
 
 router.use(requireAuth);
+router.use(syncAuthenticatedUser);
 
 router.get('/system/version', (_req, res) => {
   res.json({ data: { version: '1.0.0', minimum_supported_version: '1.0.0' } });
@@ -311,6 +312,18 @@ router.patch('/thresholds/:id', async (req, res, next) => {
     next(error);
   }
 });
+
+async function syncAuthenticatedUser(req, _res, next) {
+  const client = await pool.connect();
+  try {
+    await ensurePublicUser(client, req.user);
+    next();
+  } catch (error) {
+    next(error);
+  } finally {
+    client.release();
+  }
+}
 
 async function ensurePublicUser(client, user) {
   const tableResult = await client.query("SELECT to_regclass('public.users') AS users_table");
