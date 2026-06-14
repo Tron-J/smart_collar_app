@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
 
-class TealButton extends StatelessWidget {
-  const TealButton.filled({
+class PrimaryButton extends StatelessWidget {
+  const PrimaryButton.filled({
     super.key,
     required this.label,
     required this.onPressed,
   }) : isOutlined = false;
 
-  const TealButton.outlined({
+  const PrimaryButton.outlined({
     super.key,
     required this.label,
     required this.onPressed,

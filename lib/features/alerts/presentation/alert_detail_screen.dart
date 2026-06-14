@@ -4,7 +4,7 @@ import 'package:smart_collar_app/core/constants/colors.dart';
 import 'package:smart_collar_app/features/alerts/providers/alerts_provider.dart';
 import 'package:smart_collar_app/shared/widgets/error_view.dart';
 import 'package:smart_collar_app/shared/widgets/loading_shimmer.dart';
-import 'package:smart_collar_app/shared/widgets/teal_button.dart';
+import 'package:smart_collar_app/shared/widgets/primary_button.dart';
 
 class AlertDetailScreen extends ConsumerWidget {
   const AlertDetailScreen({super.key, required this.alertId});
@@ -63,7 +63,7 @@ class AlertDetailScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              TealButton.filled(
+              PrimaryButton.filled(
                 label: alert.isResolved ? 'Resolved' : 'Mark as resolved',
                 onPressed: alert.isResolved
                     ? null

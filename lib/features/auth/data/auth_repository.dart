@@ -1,6 +1,8 @@
 import 'package:smart_collar_app/core/errors/exceptions.dart';
+import 'package:smart_collar_app/core/config/app_config.dart';
 import 'package:smart_collar_app/core/storage/secure_storage.dart';
 import 'package:smart_collar_app/features/auth/data/models/user_model.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthSession {
@@ -16,9 +18,12 @@ class AuthSession {
 }
 
 class AuthRepository {
-  AuthRepository({required SecureStorage storage}) : _storage = storage;
+  AuthRepository({required SecureStorage storage, required AppConfig config})
+    : _storage = storage,
+      _config = config;
 
   final SecureStorage _storage;
+  final AppConfig _config;
   SupabaseClient get _supabase => Supabase.instance.client;
 
   Future<void> register({
@@ -53,17 +58,38 @@ class AuthRepository {
   }
 
   Future<AuthSession> continueWithGoogle() async {
-    final started = await _supabase.auth.signInWithOAuth(
-      OAuthProvider.google,
-      redirectTo: 'io.supabase.smartcollar://login-callback',
-    );
-    if (!started) {
-      throw ApiException('Google sign-in could not be started.');
+    if (_config.googleWebClientId.trim().isEmpty) {
+      throw ApiException(
+        'Google sign-in is not configured. Build the app with GOOGLE_WEB_CLIENT_ID.',
+      );
     }
 
-    final session = _supabase.auth.currentSession;
+    final googleSignIn = GoogleSignIn(
+      scopes: const ['email', 'profile'],
+      serverClientId: _config.googleWebClientId,
+    );
+    await googleSignIn.signOut();
+    final googleUser = await googleSignIn.signIn();
+    if (googleUser == null) {
+      throw ApiException('Google sign-in was cancelled.');
+    }
+
+    final googleAuth = await googleUser.authentication;
+    final idToken = googleAuth.idToken;
+    if (idToken == null || idToken.isEmpty) {
+      throw ApiException(
+        'Google did not return an ID token. Check the Google Web Client ID.',
+      );
+    }
+
+    final response = await _supabase.auth.signInWithIdToken(
+      provider: OAuthProvider.google,
+      idToken: idToken,
+      accessToken: googleAuth.accessToken,
+    );
+    final session = response.session;
     if (session == null) {
-      return const AuthSession(token: '', requiresOnboarding: true);
+      throw ApiException('Supabase did not return a Google session.');
     }
     return _sessionFromSupabase(session);
   }

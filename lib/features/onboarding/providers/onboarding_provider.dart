@@ -5,6 +5,7 @@ import 'package:smart_collar_app/features/onboarding/data/models/animal.dart';
 import 'package:smart_collar_app/features/onboarding/data/models/collar.dart';
 import 'package:smart_collar_app/features/onboarding/data/models/farm.dart';
 import 'package:smart_collar_app/features/onboarding/data/onboarding_repository.dart';
+import 'package:smart_collar_app/features/herd/providers/herd_provider.dart';
 
 final onboardingRepositoryProvider = Provider<OnboardingRepository>((ref) {
   return OnboardingRepository(apiClient: ref.watch(apiClientProvider));
@@ -14,6 +15,18 @@ final onboardingControllerProvider =
     StateNotifierProvider<OnboardingController, AsyncValue<OnboardingState>>(
       (ref) => OnboardingController(ref),
     );
+
+final userFarmsProvider = FutureProvider<List<Farm>>((ref) {
+  return ref.watch(onboardingRepositoryProvider).fetchFarms();
+});
+
+final completedFarmProvider = FutureProvider<Farm?>((ref) async {
+  final farms = await ref.watch(userFarmsProvider.future);
+  if (farms.isEmpty) return null;
+  final farm = farms.first;
+  await saveCurrentFarmId(ref, farm.id);
+  return farm;
+});
 
 class OnboardingState {
   const OnboardingState({this.farm, this.animal, this.collar});
@@ -53,6 +66,8 @@ class OnboardingController extends StateNotifier<AsyncValue<OnboardingState>> {
         farmType: farmType,
       );
       await saveCurrentFarmId(_ref, farm.id);
+      _ref.invalidate(userFarmsProvider);
+      _ref.invalidate(completedFarmProvider);
       state = AsyncData(previous.copyWith(farm: farm));
       return farm;
     } catch (error, stackTrace) {
@@ -86,6 +101,7 @@ class OnboardingController extends StateNotifier<AsyncValue<OnboardingState>> {
         weightKg: weightKg,
       );
       await saveCurrentAnimalId(_ref, animal.id);
+      _ref.invalidate(herdAnimalsProvider);
       state = AsyncData(previous.copyWith(animal: animal));
       return animal;
     } catch (error, stackTrace) {
@@ -109,6 +125,7 @@ class OnboardingController extends StateNotifier<AsyncValue<OnboardingState>> {
         farmId: farmId,
         animalId: animalId,
       );
+      _ref.invalidate(farmCollarsProvider);
       state = AsyncData(previous.copyWith(collar: collar));
       return collar;
     } catch (error, stackTrace) {

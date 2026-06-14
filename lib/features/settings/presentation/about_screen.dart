@@ -10,25 +10,20 @@ class AboutScreen extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       children: [
         Text(
-          'About Julius Collar',
+          'About Smart Collar',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: 12),
         Text(
-          'Julius Collar — Intelligent Livestock Monitoring\n'
+          'Smart Collar - Intelligent Livestock Monitoring\n'
           'Version: 1.0.0\n\n'
-          'A final year project by:\n'
-          'Julius Joseph (SFE/23U/3489)\n'
-          'Department of Software Engineering\n'
-          'Nigerian Army University Biu\n\n'
-          'Supervisor: Dr. Ali Garba Jakwa\n\n'
-          'Hardware: ESP32 + DS18B20 + MAX30102 + MPU6050\n'
-          'Communication: MQTT over Wi-Fi → Cloud Server → Flutter\n\n'
-          'This system detects early signs of Peste des Petits Ruminants\n'
-          '(PPR) by continuously monitoring body temperature, heart rate,\n'
-          'and physical activity of livestock in real time.\n\n'
-          'Contact: [email]\n'
-          'GitHub: [link]',
+          'Smart Collar helps farms monitor livestock health in real time '
+          'using wearable IoT collars and cloud dashboards.\n\n'
+          'The system tracks pulse, body temperature, movement, battery, '
+          'connection strength, and PPR risk signals so farm owners '
+          'can respond earlier to health changes.\n\n'
+          'Built for animal health monitoring, farm collar management, '
+          'and real-time alerting.',
           style: Theme.of(
             context,
           ).textTheme.bodyMedium?.copyWith(color: kTextSecond, height: 1.4),

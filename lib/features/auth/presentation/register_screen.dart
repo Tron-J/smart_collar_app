@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
 import 'package:smart_collar_app/features/auth/providers/auth_provider.dart';
-import 'package:smart_collar_app/shared/widgets/julius_scaffold.dart';
-import 'package:smart_collar_app/shared/widgets/teal_button.dart';
+import 'package:smart_collar_app/shared/widgets/smart_collar_scaffold.dart';
+import 'package:smart_collar_app/shared/widgets/primary_button.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -36,7 +36,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final authState = ref.watch(authControllerProvider);
     final isLoading = authState.isLoading;
 
-    return JuliusScaffold(
+    return SmartCollarScaffold(
       appBar: AppBar(
         backgroundColor: kBgDeep,
         elevation: 0,
@@ -49,7 +49,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           child: ListView(
             children: [
               Text(
-                'Welcome to Julius Collar',
+                'Welcome to Smart Collar',
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 6),
@@ -111,7 +111,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
                 const SizedBox(height: 12),
               ],
-              TealButton.filled(
+              PrimaryButton.filled(
                 label: isLoading ? 'Creating account...' : 'Continue',
                 onPressed: isLoading
                     ? null

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
 
-class JuliusScaffold extends StatelessWidget {
-  const JuliusScaffold({
+class SmartCollarScaffold extends StatelessWidget {
+  const SmartCollarScaffold({
     super.key,
     required this.body,
     this.appBar,

@@ -7,11 +7,11 @@ const clientsByFarm = new Map();
 export function attachWebSocket(server) {
   const wss = new WebSocketServer({ server, path: '/ws' });
 
-  wss.on('connection', (socket, request) => {
+  wss.on('connection', async (socket, request) => {
     const url = new URL(request.url, 'http://localhost');
     const token = url.searchParams.get('token');
     try {
-      const payload = verifyToken(token);
+      const payload = await verifyToken(token);
       socket.userId = payload.sub;
       addClient(clientsByUser, socket.userId, socket);
     } catch {

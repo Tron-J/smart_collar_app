@@ -3,7 +3,10 @@ import 'package:smart_collar_app/core/providers/app_services.dart';
 import 'package:smart_collar_app/features/auth/data/auth_repository.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  return AuthRepository(storage: ref.watch(secureStorageProvider));
+  return AuthRepository(
+    storage: ref.watch(secureStorageProvider),
+    config: ref.watch(appConfigProvider),
+  );
 });
 
 final authControllerProvider =

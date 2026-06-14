@@ -33,7 +33,7 @@ class PprRiskCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'LIVE MONITORING · ANIMAL #—',
+                'LIVE MONITORING',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: kTextMuted,
                   letterSpacing: 1.2,
@@ -92,7 +92,7 @@ class PprRiskCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'Edge-computed risk score combining body temperature, heart rate and motion to detect early signs of Peste des Petits Ruminants.',
+            'Health risk estimate based on body temperature, pulse, and movement patterns.',
             style: Theme.of(
               context,
             ).textTheme.bodySmall?.copyWith(color: kTextSecond),

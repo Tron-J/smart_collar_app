@@ -5,8 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ApiClient {
   ApiClient({required String baseUrl, SecureStorage? storage})
-    : _storage = storage,
-      _dio = Dio(
+    : _dio = Dio(
         BaseOptions(
           baseUrl: baseUrl,
           connectTimeout: const Duration(seconds: 30),
@@ -28,8 +27,7 @@ class ApiClient {
             );
           }
 
-          final supabaseToken = _readSupabaseToken();
-          final token = supabaseToken ?? await _storage?.readToken();
+          final token = _readSupabaseToken();
           if (token != null && token.isNotEmpty) {
             options.headers['Authorization'] = 'Bearer $token';
           }
@@ -39,7 +37,6 @@ class ApiClient {
     );
   }
 
-  final SecureStorage? _storage;
   final Dio _dio;
 
   Dio get dio => _dio;

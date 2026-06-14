@@ -13,5 +13,5 @@ Future<void> main() async {
       publishableKey: config.supabaseAnonKey,
     );
   }
-  runApp(ProviderScope(child: JuliusApp()));
+  runApp(ProviderScope(child: SmartCollarApp()));
 }

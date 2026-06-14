@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
-import 'package:smart_collar_app/shared/widgets/julius_scaffold.dart';
+import 'package:smart_collar_app/shared/widgets/smart_collar_scaffold.dart';
 import 'package:smart_collar_app/shared/widgets/status_badge.dart';
-import 'package:smart_collar_app/shared/widgets/teal_button.dart';
+import 'package:smart_collar_app/shared/widgets/primary_button.dart';
 
 class WifiConfigScreen extends StatelessWidget {
   const WifiConfigScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return JuliusScaffold(
+    return SmartCollarScaffold(
       appBar: AppBar(
         backgroundColor: kBgDeep,
         elevation: 0,
@@ -52,7 +52,7 @@ class WifiConfigScreen extends StatelessWidget {
                   const StatusBadge(label: 'Searching'),
                   const SizedBox(height: 12),
                   Text(
-                    'We will show nearby JuliusCollar devices here.',
+                    'We will show nearby Smart Collar devices here.',
                     style: Theme.of(
                       context,
                     ).textTheme.bodySmall?.copyWith(color: kTextMuted),
@@ -61,7 +61,7 @@ class WifiConfigScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
-            TealButton.filled(
+            PrimaryButton.filled(
               label: 'Continue',
               onPressed: () => context.go('/setup-complete'),
             ),

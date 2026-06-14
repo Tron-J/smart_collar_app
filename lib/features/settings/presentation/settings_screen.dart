@@ -19,16 +19,28 @@ class SettingsScreen extends StatelessWidget {
           ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
         ),
         const SizedBox(height: 20),
-        _SectionTile(title: 'Profile'),
-        _SectionTile(title: 'Farm'),
+        _SectionTile(
+          title: 'Profile',
+          onTap: () => context.go('/settings/profile'),
+        ),
+        _SectionTile(title: 'Farm', onTap: () => context.go('/settings/farm')),
         _SectionTile(title: 'Herd', onTap: () => context.go('/herd')),
-        _SectionTile(title: 'Collar management'),
-        _SectionTile(title: 'Notifications'),
+        _SectionTile(
+          title: 'Collar management',
+          onTap: () => context.go('/collars'),
+        ),
+        _SectionTile(
+          title: 'Notifications',
+          onTap: () => context.go('/settings/notifications'),
+        ),
         _SectionTile(
           title: 'Alert thresholds',
           onTap: () => context.go('/alerts/thresholds'),
         ),
-        _SectionTile(title: 'Data & Privacy'),
+        _SectionTile(
+          title: 'Data & Privacy',
+          onTap: () => context.go('/settings/privacy'),
+        ),
         _SectionTile(title: 'About', onTap: () => context.go('/about')),
       ],
     );

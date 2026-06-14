@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
-import 'package:smart_collar_app/shared/widgets/julius_scaffold.dart';
-import 'package:smart_collar_app/shared/widgets/teal_button.dart';
+import 'package:smart_collar_app/shared/widgets/smart_collar_scaffold.dart';
+import 'package:smart_collar_app/shared/widgets/primary_button.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -41,7 +41,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       ),
     ];
 
-    return JuliusScaffold(
+    return SmartCollarScaffold(
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -92,7 +92,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              TealButton.filled(
+              PrimaryButton.filled(
                 label: _index == pages.length - 1 ? 'Continue' : 'Next',
                 onPressed: () {
                   if (_index == pages.length - 1) {

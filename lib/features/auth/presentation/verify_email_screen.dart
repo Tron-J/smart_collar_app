@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
-import 'package:smart_collar_app/shared/widgets/julius_scaffold.dart';
-import 'package:smart_collar_app/shared/widgets/teal_button.dart';
+import 'package:smart_collar_app/shared/widgets/smart_collar_scaffold.dart';
+import 'package:smart_collar_app/shared/widgets/primary_button.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   const VerifyEmailScreen({super.key});
@@ -28,7 +28,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return JuliusScaffold(
+    return SmartCollarScaffold(
       appBar: AppBar(
         backgroundColor: kBgDeep,
         elevation: 0,
@@ -73,7 +73,7 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
               }),
             ),
             const SizedBox(height: 24),
-            TealButton.filled(
+            PrimaryButton.filled(
               label: 'Verify',
               onPressed: () => context.go('/farm-setup'),
             ),

@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
 
-class JuliusShell extends StatelessWidget {
-  const JuliusShell({super.key, required this.location, required this.child});
+class SmartCollarShell extends StatelessWidget {
+  const SmartCollarShell({
+    super.key,
+    required this.location,
+    required this.child,
+  });
 
   final String location;
   final Widget child;
 
   int _indexFromLocation() {
     if (location.startsWith('/dashboard')) return 0;
-    if (location.startsWith('/sensors')) return 1;
+    if (location.startsWith('/collars')) return 1;
     if (location.startsWith('/alerts')) return 2;
     if (location.startsWith('/history')) return 3;
     if (location.startsWith('/settings') || location.startsWith('/about')) {
@@ -25,6 +29,15 @@ class JuliusShell extends StatelessWidget {
     return Scaffold(
       backgroundColor: kBgDeep,
       body: SafeArea(child: child),
+      floatingActionButton: location.startsWith('/chat')
+          ? null
+          : FloatingActionButton(
+              onPressed: () => context.go('/chat'),
+              backgroundColor: kAccentPrimary,
+              foregroundColor: kTextPrimary,
+              tooltip: 'Open health assistant',
+              child: const Icon(Icons.chat_bubble_outline_rounded),
+            ),
       bottomNavigationBar: _BottomNavBar(
         currentIndex: index,
         onTap: (next) {
@@ -33,7 +46,7 @@ class JuliusShell extends StatelessWidget {
               context.go('/dashboard');
               break;
             case 1:
-              context.go('/sensors');
+              context.go('/collars');
               break;
             case 2:
               context.go('/alerts');
@@ -74,8 +87,8 @@ class _BottomNavBar extends StatelessWidget {
             onTap: () => onTap(0),
           ),
           _NavItem(
-            label: 'Sensors',
-            icon: Icons.sensors,
+            label: 'Collars',
+            icon: Icons.memory_rounded,
             isActive: currentIndex == 1,
             onTap: () => onTap(1),
           ),

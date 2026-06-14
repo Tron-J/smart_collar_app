@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
 import 'package:smart_collar_app/features/auth/providers/auth_provider.dart';
-import 'package:smart_collar_app/shared/widgets/julius_scaffold.dart';
-import 'package:smart_collar_app/shared/widgets/teal_button.dart';
+import 'package:smart_collar_app/shared/widgets/smart_collar_scaffold.dart';
+import 'package:smart_collar_app/shared/widgets/primary_button.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -32,7 +32,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final authState = ref.watch(authControllerProvider);
     final isLoading = authState.isLoading;
 
-    return JuliusScaffold(
+    return SmartCollarScaffold(
       appBar: AppBar(
         backgroundColor: kBgDeep,
         elevation: 0,
@@ -100,7 +100,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 const SizedBox(height: 12),
               ],
-              TealButton.filled(
+              PrimaryButton.filled(
                 label: isLoading ? 'Signing in...' : 'Sign in',
                 onPressed: isLoading
                     ? null

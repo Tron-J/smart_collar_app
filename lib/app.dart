@@ -11,6 +11,9 @@ import 'package:smart_collar_app/features/auth/presentation/welcome_screen.dart'
 import 'package:smart_collar_app/features/alerts/presentation/alerts_screen.dart';
 import 'package:smart_collar_app/features/alerts/presentation/alert_detail_screen.dart';
 import 'package:smart_collar_app/features/alerts/presentation/threshold_config_screen.dart';
+import 'package:smart_collar_app/features/chat/presentation/chat_screen.dart';
+import 'package:smart_collar_app/features/collars/presentation/collar_detail_screen.dart';
+import 'package:smart_collar_app/features/collars/presentation/collars_screen.dart';
 import 'package:smart_collar_app/features/herd/presentation/animal_detail_screen.dart';
 import 'package:smart_collar_app/features/herd/presentation/herd_screen.dart';
 import 'package:smart_collar_app/features/onboarding/presentation/add_animal_screen.dart';
@@ -21,12 +24,15 @@ import 'package:smart_collar_app/features/onboarding/presentation/wifi_config_sc
 import 'package:smart_collar_app/features/dashboard/presentation/dashboard_screen.dart';
 import 'package:smart_collar_app/features/history/presentation/history_screen.dart';
 import 'package:smart_collar_app/features/settings/presentation/about_screen.dart';
+import 'package:smart_collar_app/features/settings/presentation/data_privacy_screen.dart';
+import 'package:smart_collar_app/features/settings/presentation/farm_settings_screen.dart';
+import 'package:smart_collar_app/features/settings/presentation/notification_settings_screen.dart';
+import 'package:smart_collar_app/features/settings/presentation/profile_settings_screen.dart';
 import 'package:smart_collar_app/features/settings/presentation/settings_screen.dart';
-import 'package:smart_collar_app/features/sensors/presentation/sensors_screen.dart';
-import 'package:smart_collar_app/shared/widgets/julius_shell.dart';
+import 'package:smart_collar_app/shared/widgets/smart_collar_shell.dart';
 
-class JuliusApp extends StatelessWidget {
-  JuliusApp({super.key});
+class SmartCollarApp extends StatelessWidget {
+  SmartCollarApp({super.key});
 
   final GoRouter _router = GoRouter(
     routes: [
@@ -55,13 +61,19 @@ class JuliusApp extends StatelessWidget {
       ),
       ShellRoute(
         builder: (context, state, child) =>
-            JuliusShell(location: state.uri.toString(), child: child),
+            SmartCollarShell(location: state.uri.toString(), child: child),
         routes: [
           GoRoute(
             path: '/dashboard',
             builder: (_, _) => const DashboardScreen(),
           ),
-          GoRoute(path: '/sensors', builder: (_, _) => const SensorsScreen()),
+          GoRoute(path: '/chat', builder: (_, _) => const ChatScreen()),
+          GoRoute(path: '/collars', builder: (_, _) => const CollarsScreen()),
+          GoRoute(
+            path: '/collars/:id',
+            builder: (_, state) =>
+                CollarDetailScreen(collarId: state.pathParameters['id'] ?? ''),
+          ),
           GoRoute(path: '/alerts', builder: (_, _) => const AlertsScreen()),
           GoRoute(
             path: '/alerts/thresholds',
@@ -80,6 +92,22 @@ class JuliusApp extends StatelessWidget {
           ),
           GoRoute(path: '/history', builder: (_, _) => const HistoryScreen()),
           GoRoute(path: '/settings', builder: (_, _) => const SettingsScreen()),
+          GoRoute(
+            path: '/settings/profile',
+            builder: (_, _) => const ProfileSettingsScreen(),
+          ),
+          GoRoute(
+            path: '/settings/farm',
+            builder: (_, _) => const FarmSettingsScreen(),
+          ),
+          GoRoute(
+            path: '/settings/notifications',
+            builder: (_, _) => const NotificationSettingsScreen(),
+          ),
+          GoRoute(
+            path: '/settings/privacy',
+            builder: (_, _) => const DataPrivacyScreen(),
+          ),
           GoRoute(path: '/about', builder: (_, _) => const AboutScreen()),
         ],
       ),
@@ -92,7 +120,7 @@ class JuliusApp extends StatelessWidget {
     final textTheme = buildTextTheme(baseTheme.textTheme);
 
     return MaterialApp.router(
-      title: 'Julius Collar',
+      title: 'Smart Collar',
       theme: baseTheme.copyWith(
         scaffoldBackgroundColor: kBgDeep,
         colorScheme: baseTheme.colorScheme.copyWith(

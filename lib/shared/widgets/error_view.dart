@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
-import 'package:smart_collar_app/shared/widgets/teal_button.dart';
+import 'package:smart_collar_app/shared/widgets/primary_button.dart';
 
 class ErrorView extends StatelessWidget {
   const ErrorView({super.key, required this.message, required this.onRetry});
@@ -26,7 +26,7 @@ class ErrorView extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            TealButton.filled(label: 'Retry', onPressed: onRetry),
+            PrimaryButton.filled(label: 'Retry', onPressed: onRetry),
           ],
         ),
       ),

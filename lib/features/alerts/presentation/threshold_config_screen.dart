@@ -5,7 +5,7 @@ import 'package:smart_collar_app/features/alerts/data/models/alert_threshold.dar
 import 'package:smart_collar_app/features/alerts/providers/alerts_provider.dart';
 import 'package:smart_collar_app/shared/widgets/error_view.dart';
 import 'package:smart_collar_app/shared/widgets/loading_shimmer.dart';
-import 'package:smart_collar_app/shared/widgets/teal_button.dart';
+import 'package:smart_collar_app/shared/widgets/primary_button.dart';
 
 class ThresholdConfigScreen extends ConsumerStatefulWidget {
   const ThresholdConfigScreen({super.key});
@@ -112,7 +112,7 @@ class _ThresholdConfigScreenState extends ConsumerState<ThresholdConfigScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                TealButton.filled(
+                PrimaryButton.filled(
                   label: saveState.isLoading ? 'Saving...' : 'Save thresholds',
                   onPressed: saveState.isLoading
                       ? null

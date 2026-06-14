@@ -4,6 +4,7 @@ class AppConfig {
     required this.websocketBaseUrl,
     required this.supabaseUrl,
     required this.supabaseAnonKey,
+    required this.googleWebClientId,
   });
 
   factory AppConfig.fromEnvironment() {
@@ -12,6 +13,7 @@ class AppConfig {
       websocketBaseUrl: String.fromEnvironment('WS_BASE_URL'),
       supabaseUrl: String.fromEnvironment('SUPABASE_URL'),
       supabaseAnonKey: String.fromEnvironment('SUPABASE_ANON_KEY'),
+      googleWebClientId: String.fromEnvironment('GOOGLE_WEB_CLIENT_ID'),
     );
   }
 
@@ -19,6 +21,7 @@ class AppConfig {
   final String websocketBaseUrl;
   final String supabaseUrl;
   final String supabaseAnonKey;
+  final String googleWebClientId;
 
   bool get hasApiBaseUrl => apiBaseUrl.trim().isNotEmpty;
   bool get hasWebsocketBaseUrl => websocketBaseUrl.trim().isNotEmpty;

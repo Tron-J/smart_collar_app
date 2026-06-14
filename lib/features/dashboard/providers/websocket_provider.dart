@@ -5,6 +5,7 @@ import 'package:smart_collar_app/core/network/websocket_service.dart';
 import 'package:smart_collar_app/core/providers/app_services.dart';
 import 'package:smart_collar_app/features/dashboard/data/models/sensor_reading.dart';
 import 'package:smart_collar_app/features/dashboard/providers/live_readings_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 final websocketServiceProvider = Provider<WebSocketService>((ref) {
   final config = ref.watch(appConfigProvider);
@@ -15,13 +16,12 @@ final websocketServiceProvider = Provider<WebSocketService>((ref) {
 
 final websocketStreamProvider = StreamProvider<void>((ref) {
   final service = ref.watch(websocketServiceProvider);
-  final storage = ref.watch(secureStorageProvider);
   final controller = StreamController<void>();
 
   StreamSubscription<Map<String, dynamic>>? subscription;
 
   Future<void> connect() async {
-    final token = await storage.readToken();
+    final token = Supabase.instance.client.auth.currentSession?.accessToken;
     if (token == null || token.isEmpty || service.baseUrl.trim().isEmpty) {
       ref.read(liveReadingsProvider.notifier).setConnection(false);
       return;

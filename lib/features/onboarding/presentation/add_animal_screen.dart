@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
 import 'package:smart_collar_app/features/onboarding/providers/onboarding_provider.dart';
-import 'package:smart_collar_app/shared/widgets/julius_scaffold.dart';
-import 'package:smart_collar_app/shared/widgets/teal_button.dart';
+import 'package:smart_collar_app/shared/widgets/app_loading_overlay.dart';
+import 'package:smart_collar_app/shared/widgets/smart_collar_scaffold.dart';
+import 'package:smart_collar_app/shared/widgets/primary_button.dart';
 
 class AddAnimalScreen extends ConsumerStatefulWidget {
   const AddAnimalScreen({super.key});
@@ -35,104 +36,110 @@ class _AddAnimalScreenState extends ConsumerState<AddAnimalScreen> {
     final onboardingState = ref.watch(onboardingControllerProvider);
     final isLoading = onboardingState.isLoading;
 
-    return JuliusScaffold(
+    return SmartCollarScaffold(
       appBar: AppBar(
         backgroundColor: kBgDeep,
         elevation: 0,
         title: const Text('Add animal'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              Text(
-                'Register an animal',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'Add the animal tag and basic details for monitoring.',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
-              ),
-              const SizedBox(height: 24),
-              TextFormField(
-                controller: _tagController,
-                decoration: const InputDecoration(labelText: 'Animal tag ID'),
-                validator: (value) => value == null || value.isEmpty
-                    ? 'Animal tag required'
-                    : null,
-              ),
-              const SizedBox(height: 16),
-              _SegmentedRow(
-                label: 'Species',
-                value: _species,
-                options: const ['sheep', 'goat'],
-                onChanged: (value) => setState(() => _species = value),
-              ),
-              const SizedBox(height: 16),
-              _SegmentedRow(
-                label: 'Sex',
-                value: _sex,
-                options: const ['female', 'male'],
-                onChanged: (value) => setState(() => _sex = value),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _ageController,
-                decoration: const InputDecoration(labelText: 'Age (months)'),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _weightController,
-                decoration: const InputDecoration(labelText: 'Weight (kg)'),
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 24),
-              if (_errorMessage != null) ...[
+      body: AppLoadingOverlay(
+        isLoading: isLoading,
+        message: 'Adding animal profile...',
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: [
                 Text(
-                  _errorMessage!,
+                  'Register an animal',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Add the animal tag and basic details for monitoring.',
                   style: Theme.of(
                     context,
-                  ).textTheme.bodySmall?.copyWith(color: kDanger),
+                  ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
                 ),
-                const SizedBox(height: 12),
-              ],
-              TealButton.filled(
-                label: isLoading
-                    ? 'Adding animal...'
-                    : 'Continue to collar pairing',
-                onPressed: isLoading
-                    ? null
-                    : () async {
-                        if (_formKey.currentState?.validate() ?? false) {
-                          setState(() => _errorMessage = null);
-                          try {
-                            await ref
-                                .read(onboardingControllerProvider.notifier)
-                                .createAnimal(
-                                  animalTag: _tagController.text,
-                                  species: _species,
-                                  sex: _sex,
-                                  ageMonths: int.tryParse(_ageController.text),
-                                  weightKg: double.tryParse(
-                                    _weightController.text,
-                                  ),
-                                );
-                            if (!context.mounted) return;
-                            context.go('/pair-collar');
-                          } catch (error) {
-                            if (!mounted) return;
-                            setState(() => _errorMessage = error.toString());
+                const SizedBox(height: 24),
+                TextFormField(
+                  controller: _tagController,
+                  decoration: const InputDecoration(labelText: 'Animal tag ID'),
+                  validator: (value) => value == null || value.isEmpty
+                      ? 'Animal tag required'
+                      : null,
+                ),
+                const SizedBox(height: 16),
+                _SegmentedRow(
+                  label: 'Species',
+                  value: _species,
+                  options: const ['sheep', 'goat'],
+                  onChanged: (value) => setState(() => _species = value),
+                ),
+                const SizedBox(height: 16),
+                _SegmentedRow(
+                  label: 'Sex',
+                  value: _sex,
+                  options: const ['female', 'male'],
+                  onChanged: (value) => setState(() => _sex = value),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _ageController,
+                  decoration: const InputDecoration(labelText: 'Age (months)'),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _weightController,
+                  decoration: const InputDecoration(labelText: 'Weight (kg)'),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 24),
+                if (_errorMessage != null) ...[
+                  Text(
+                    _errorMessage!,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: kDanger),
+                  ),
+                  const SizedBox(height: 12),
+                ],
+                PrimaryButton.filled(
+                  label: isLoading
+                      ? 'Adding animal...'
+                      : 'Continue to collar pairing',
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                          if (_formKey.currentState?.validate() ?? false) {
+                            setState(() => _errorMessage = null);
+                            try {
+                              await ref
+                                  .read(onboardingControllerProvider.notifier)
+                                  .createAnimal(
+                                    animalTag: _tagController.text,
+                                    species: _species,
+                                    sex: _sex,
+                                    ageMonths: int.tryParse(
+                                      _ageController.text,
+                                    ),
+                                    weightKg: double.tryParse(
+                                      _weightController.text,
+                                    ),
+                                  );
+                              if (!context.mounted) return;
+                              context.go('/pair-collar');
+                            } catch (error) {
+                              if (!mounted) return;
+                              setState(() => _errorMessage = error.toString());
+                            }
                           }
-                        }
-                      },
-              ),
-            ],
+                        },
+                ),
+              ],
+            ),
           ),
         ),
       ),

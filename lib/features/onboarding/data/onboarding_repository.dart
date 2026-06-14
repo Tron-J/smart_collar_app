@@ -11,6 +11,15 @@ class OnboardingRepository {
 
   final ApiClient _api;
 
+  Future<List<Farm>> fetchFarms() async {
+    try {
+      final response = await _api.dio.get(ApiEndpoints.farms);
+      return _extractList(response.data).map(Farm.fromJson).toList();
+    } on DioException catch (error) {
+      throw ApiException(_messageFromDio(error, 'Failed to load farms'));
+    }
+  }
+
   Future<Farm> createFarm({
     required String name,
     String? location,
@@ -86,6 +95,14 @@ class OnboardingRepository {
       return data;
     }
     return <String, dynamic>{};
+  }
+
+  List<Map<String, dynamic>> _extractList(Object? data) {
+    final value = data is Map<String, dynamic> ? data['data'] : data;
+    if (value is List) {
+      return value.whereType<Map<String, dynamic>>().toList();
+    }
+    return [];
   }
 
   String _messageFromDio(DioException error, String fallback) {

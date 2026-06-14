@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
+import 'package:smart_collar_app/core/providers/app_services.dart';
 import 'package:smart_collar_app/features/auth/providers/auth_provider.dart';
-import 'package:smart_collar_app/shared/widgets/julius_scaffold.dart';
+import 'package:smart_collar_app/shared/widgets/smart_collar_scaffold.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -22,13 +23,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           .read(authControllerProvider.notifier)
           .hasStoredToken();
       if (!mounted) return;
-      context.go(hasToken ? '/dashboard' : '/welcome');
+      if (!hasToken) {
+        context.go('/welcome');
+        return;
+      }
+
+      final farmId = await ref.read(secureStorageProvider).readCurrentFarmId();
+      if (!mounted) return;
+      context.go(farmId == null ? '/farm-setup' : '/dashboard');
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return JuliusScaffold(
+    return SmartCollarScaffold(
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -42,7 +50,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               ),
               child: const Center(
                 child: Text(
-                  'J',
+                  'S',
                   style: TextStyle(
                     color: kBgDeep,
                     fontSize: 32,
@@ -53,7 +61,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Julius Collar',
+              'Smart Collar',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 6),
