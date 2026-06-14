@@ -29,6 +29,10 @@ router.get('/health/farm-write', async (_req, res, next) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
+    await ensurePublicUser(client, {
+      id: '00000000-0000-0000-0000-000000000000',
+      email: 'health-check@smartcollar.local'
+    });
     const result = await client.query(
       `INSERT INTO farms (user_id, name, location, farm_type)
        VALUES ($1,$2,$3,$4)
@@ -85,26 +89,33 @@ router.get('/farms', async (req, res, next) => {
 });
 
 router.post('/farms', async (req, res, next) => {
+  const client = await pool.connect();
   try {
     const { name, location, farm_type } = req.body;
     if (!name || !farm_type) {
       return res.status(400).json({ message: 'Farm name and type are required' });
     }
-    const result = await query(
+    await client.query('BEGIN');
+    await ensurePublicUser(client, req.user);
+    const result = await client.query(
       `INSERT INTO farms (user_id, name, location, farm_type)
        VALUES ($1,$2,$3,$4)
        RETURNING *`,
       [req.user.id, name, location ?? null, farm_type]
     );
     const farm = firstRow(result);
-    try {
-      await query('INSERT INTO alert_thresholds (farm_id) VALUES ($1)', [farm.id]);
-    } catch (thresholdError) {
-      console.error('Default alert threshold creation failed', thresholdError);
-    }
+    await client.query('INSERT INTO alert_thresholds (farm_id) VALUES ($1)', [farm.id]);
+    await client.query('COMMIT');
     res.status(201).json({ data: farm });
   } catch (error) {
+    try {
+      await client.query('ROLLBACK');
+    } catch {
+      // Ignore rollback failures so the original request error is reported.
+    }
     next(error);
+  } finally {
+    client.release();
   }
 });
 
@@ -300,3 +311,50 @@ router.patch('/thresholds/:id', async (req, res, next) => {
     next(error);
   }
 });
+
+async function ensurePublicUser(client, user) {
+  const tableResult = await client.query("SELECT to_regclass('public.users') AS users_table");
+  if (!firstRow(tableResult)?.users_table) return;
+
+  const columnsResult = await client.query(
+    `SELECT column_name, is_nullable, column_default
+     FROM information_schema.columns
+     WHERE table_schema = 'public' AND table_name = 'users'`
+  );
+  const columns = columnsResult.rows;
+  const columnNames = new Set(columns.map((column) => column.column_name));
+  if (!columnNames.has('id')) return;
+
+  const values = { id: user.id };
+  if (columnNames.has('email')) values.email = user.email ?? null;
+  if (columnNames.has('full_name')) values.full_name = user.email ?? 'Smart Collar user';
+  if (columnNames.has('name')) values.name = user.email ?? 'Smart Collar user';
+  if (columnNames.has('display_name')) values.display_name = user.email ?? 'Smart Collar user';
+  if (columnNames.has('created_at')) values.created_at = new Date();
+  if (columnNames.has('updated_at')) values.updated_at = new Date();
+
+  const missingRequiredColumn = columns.find(
+    (column) =>
+      column.column_name !== 'id' &&
+      column.is_nullable === 'NO' &&
+      column.column_default == null &&
+      !Object.hasOwn(values, column.column_name)
+  );
+  if (missingRequiredColumn) {
+    throw new Error(`Cannot create user profile because users.${missingRequiredColumn.column_name} is required`);
+  }
+
+  const insertColumns = Object.keys(values);
+  const placeholders = insertColumns.map((_, index) => `$${index + 1}`);
+  const updateColumns = insertColumns.filter((column) => column !== 'id' && column !== 'created_at');
+  const conflictAction = updateColumns.length
+    ? `DO UPDATE SET ${updateColumns.map((column) => `${column} = EXCLUDED.${column}`).join(', ')}`
+    : 'DO NOTHING';
+
+  await client.query(
+    `INSERT INTO users (${insertColumns.join(', ')})
+     VALUES (${placeholders.join(', ')})
+     ON CONFLICT (id) ${conflictAction}`,
+    insertColumns.map((column) => values[column])
+  );
+}
