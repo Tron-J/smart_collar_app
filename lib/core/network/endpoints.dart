@@ -6,6 +6,8 @@ class ApiEndpoints {
   static const String collarsPair = '/collars/pair';
   static String collarById(String collarId) => '/collars/$collarId';
   static String collarStatus(String collarId) => '/collars/$collarId/status';
+  static String collarDisconnect(String collarId) =>
+      '/collars/$collarId/disconnect';
 
   static String animalReadings(String animalId) =>
       '/animals/$animalId/readings';

@@ -23,7 +23,7 @@ export function startMqttWorker() {
     try {
       const data = JSON.parse(payload.toString());
       if (topic.endsWith('/telemetry')) await handleTelemetry(topic, data);
-      if (topic.endsWith('/status')) await handleStatus(data);
+      if (topic.endsWith('/status')) await handleStatus(topic, data);
     } catch (error) {
       console.error('MQTT message failed', error);
     }
@@ -37,7 +37,14 @@ async function handleTelemetry(topic, data) {
       telemetry.device_id
     ])
   );
-  if (!collar?.farm_id || !collar?.animal_id) return;
+  if (!collar) {
+    await upsertCollarInventory(telemetry);
+    return;
+  }
+  if (!collar.farm_id || !collar.animal_id) {
+    await upsertCollarInventory(telemetry);
+    return;
+  }
 
   await query(
     `UPDATE collars SET
@@ -88,18 +95,61 @@ async function handleTelemetry(topic, data) {
   await evaluateAlerts({ collar, reading, threshold });
 }
 
-async function handleStatus(data) {
+async function handleStatus(topic, data) {
+  const topicDeviceId = topic.split('/')[1];
+  const status = {
+    device_id: data.device_id ?? topicDeviceId,
+    is_online: data.is_online ?? true,
+    battery_pct: numberOrNull(data.battery_pct),
+    wifi_rssi: numberOrNull(data.wifi_rssi),
+    firmware: data.firmware ?? data.firmware_version ?? null
+  };
   const collar = firstRow(
     await query(
-      `UPDATE collars SET is_online = $2, last_seen = NOW()
-       WHERE device_id = $1
+      `INSERT INTO collars (
+        device_id, is_online, last_seen, battery_pct, wifi_rssi, firmware_version
+       )
+       VALUES ($1,$2,NOW(),$3,$4,$5)
+       ON CONFLICT (device_id) DO UPDATE SET
+        is_online = EXCLUDED.is_online,
+        last_seen = NOW(),
+        battery_pct = COALESCE(EXCLUDED.battery_pct, collars.battery_pct),
+        wifi_rssi = COALESCE(EXCLUDED.wifi_rssi, collars.wifi_rssi),
+        firmware_version = COALESCE(EXCLUDED.firmware_version, collars.firmware_version)
        RETURNING *`,
-      [data.device_id, data.is_online ?? true]
+      [
+        status.device_id,
+        status.is_online,
+        status.battery_pct,
+        status.wifi_rssi,
+        status.firmware
+      ]
     )
   );
   if (collar?.farm_id) {
     broadcastToFarm(collar.farm_id, { type: 'collar_status', data: collar });
   }
+}
+
+async function upsertCollarInventory(telemetry) {
+  await query(
+    `INSERT INTO collars (
+      device_id, is_online, last_seen, battery_pct, wifi_rssi, firmware_version
+     )
+     VALUES ($1,TRUE,NOW(),$2,$3,$4)
+     ON CONFLICT (device_id) DO UPDATE SET
+      is_online = TRUE,
+      last_seen = NOW(),
+      battery_pct = COALESCE(EXCLUDED.battery_pct, collars.battery_pct),
+      wifi_rssi = COALESCE(EXCLUDED.wifi_rssi, collars.wifi_rssi),
+      firmware_version = COALESCE(EXCLUDED.firmware_version, collars.firmware_version)`,
+    [
+      telemetry.device_id,
+      telemetry.battery_pct,
+      telemetry.wifi_rssi,
+      telemetry.firmware
+    ]
+  );
 }
 
 function normalizeTelemetry(data, topic) {

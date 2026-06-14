@@ -8,7 +8,9 @@ import 'package:smart_collar_app/shared/widgets/smart_collar_scaffold.dart';
 import 'package:smart_collar_app/shared/widgets/primary_button.dart';
 
 class PairCollarScreen extends ConsumerStatefulWidget {
-  const PairCollarScreen({super.key});
+  const PairCollarScreen({super.key, this.initialDeviceId});
+
+  final String? initialDeviceId;
 
   @override
   ConsumerState<PairCollarScreen> createState() => _PairCollarScreenState();
@@ -18,6 +20,15 @@ class _PairCollarScreenState extends ConsumerState<PairCollarScreen> {
   final _formKey = GlobalKey<FormState>();
   final _deviceIdController = TextEditingController();
   String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    final initialDeviceId = widget.initialDeviceId?.trim();
+    if (initialDeviceId != null && initialDeviceId.isNotEmpty) {
+      _deviceIdController.text = initialDeviceId;
+    }
+  }
 
   @override
   void dispose() {
@@ -104,7 +115,7 @@ class _PairCollarScreenState extends ConsumerState<PairCollarScreen> {
                       const Icon(Icons.qr_code_scanner, color: kAccentPrimary),
                       const SizedBox(height: 8),
                       Text(
-                        'QR scanning will be enabled with camera access.',
+                        'Scan the collar QR code with your phone camera to open this screen and fill the Device ID.',
                         style: Theme.of(
                           context,
                         ).textTheme.bodySmall?.copyWith(color: kTextSecond),

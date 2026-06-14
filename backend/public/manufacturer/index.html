@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Smart Collar Manufacturer</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #07111d;
+        --panel: #101b2a;
+        --panel-2: #142236;
+        --blue: #1687ff;
+        --blue-soft: rgba(22, 135, 255, 0.18);
+        --text: #f7fbff;
+        --muted: #9fb0c4;
+        --line: rgba(255, 255, 255, 0.1);
+        --danger: #ff647c;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      header {
+        border-bottom: 1px solid var(--line);
+        background: rgba(7, 17, 29, 0.92);
+        position: sticky;
+        top: 0;
+        z-index: 2;
+      }
+
+      .wrap {
+        width: min(1120px, calc(100vw - 32px));
+        margin: 0 auto;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 18px 0;
+      }
+
+      h1 {
+        font-size: 22px;
+        margin: 0;
+        letter-spacing: 0;
+      }
+
+      .subtitle {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+
+      button {
+        border: 0;
+        border-radius: 8px;
+        background: var(--blue);
+        color: var(--text);
+        cursor: pointer;
+        font-weight: 700;
+        padding: 11px 14px;
+      }
+
+      button.secondary {
+        background: var(--panel-2);
+        border: 1px solid var(--line);
+      }
+
+      button:disabled {
+        cursor: default;
+        opacity: 0.55;
+      }
+
+      main {
+        padding: 24px 0 44px;
+      }
+
+      .toolbar {
+        display: grid;
+        grid-template-columns: minmax(180px, 1fr) 170px 130px;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      input,
+      select {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        color: var(--text);
+        padding: 12px 13px;
+        outline: none;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: var(--blue);
+      }
+
+      .notice {
+        display: none;
+        margin-bottom: 16px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        color: var(--muted);
+        padding: 13px 14px;
+      }
+
+      .notice.error {
+        border-color: rgba(255, 100, 124, 0.45);
+        color: var(--danger);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 14px;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        padding: 16px;
+      }
+
+      .card-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .device {
+        overflow-wrap: anywhere;
+        font-size: 18px;
+        font-weight: 800;
+      }
+
+      .status {
+        border-radius: 999px;
+        background: var(--blue-soft);
+        color: var(--blue);
+        font-size: 12px;
+        font-weight: 800;
+        padding: 5px 9px;
+        white-space: nowrap;
+      }
+
+      .status.offline {
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin: 14px 0;
+      }
+
+      .metric {
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.04);
+        padding: 10px;
+      }
+
+      .label {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .value {
+        margin-top: 4px;
+        font-weight: 800;
+      }
+
+      .qr {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        border-top: 1px solid var(--line);
+        padding-top: 14px;
+      }
+
+      .qr img {
+        width: 92px;
+        height: 92px;
+        border-radius: 6px;
+        background: #fff;
+      }
+
+      .qr code {
+        display: block;
+        color: var(--muted);
+        overflow-wrap: anywhere;
+        margin: 8px 0 10px;
+      }
+
+      .empty {
+        border: 1px dashed var(--line);
+        border-radius: 8px;
+        padding: 28px;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      @media (max-width: 720px) {
+        .topbar,
+        .toolbar {
+          grid-template-columns: 1fr;
+          display: grid;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap topbar">
+        <div>
+          <h1>Smart Collar Manufacturer</h1>
+          <p class="subtitle">Generate QR labels from collars that have connected to the cloud.</p>
+        </div>
+        <button id="refreshButton" type="button">Refresh</button>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="toolbar">
+        <input id="manufacturerKey" type="password" placeholder="Manufacturer key, if enabled" />
+        <select id="statusFilter" aria-label="Collar filter">
+          <option value="unpaired">Unpaired collars</option>
+          <option value="all">All collars</option>
+        </select>
+        <button class="secondary" id="saveKeyButton" type="button">Save key</button>
+      </section>
+
+      <div class="notice" id="notice"></div>
+      <section class="grid" id="collarGrid"></section>
+    </main>
+
+    <script>
+      const grid = document.querySelector('#collarGrid');
+      const notice = document.querySelector('#notice');
+      const refreshButton = document.querySelector('#refreshButton');
+      const saveKeyButton = document.querySelector('#saveKeyButton');
+      const keyInput = document.querySelector('#manufacturerKey');
+      const statusFilter = document.querySelector('#statusFilter');
+
+      keyInput.value = localStorage.getItem('manufacturerKey') || '';
+
+      refreshButton.addEventListener('click', loadCollars);
+      statusFilter.addEventListener('change', loadCollars);
+      saveKeyButton.addEventListener('click', () => {
+        localStorage.setItem('manufacturerKey', keyInput.value.trim());
+        showNotice('Manufacturer key saved for this browser.');
+        loadCollars();
+      });
+
+      loadCollars();
+
+      async function loadCollars() {
+        showNotice('Loading collars...');
+        grid.innerHTML = '';
+        refreshButton.disabled = true;
+
+        try {
+          const headers = {};
+          const key = keyInput.value.trim();
+          if (key) headers['x-manufacturer-key'] = key;
+
+          const response = await fetch(`/manufacturer/collars?status=${statusFilter.value}`, {
+            headers,
+          });
+          const body = await response.json();
+          if (!response.ok) throw new Error(body.message || 'Failed to load collars');
+
+          renderCollars(body.data || []);
+          showNotice('');
+        } catch (error) {
+          showNotice(error.message, true);
+        } finally {
+          refreshButton.disabled = false;
+        }
+      }
+
+      function renderCollars(collars) {
+        if (!collars.length) {
+          grid.innerHTML = '<div class="empty">No collars found. Power on a collar and wait for it to publish status or telemetry.</div>';
+          return;
+        }
+
+        grid.innerHTML = collars.map(collarCard).join('');
+        document.querySelectorAll('[data-copy]').forEach((button) => {
+          button.addEventListener('click', async () => {
+            await navigator.clipboard.writeText(button.dataset.copy);
+            button.textContent = 'Copied';
+            setTimeout(() => (button.textContent = 'Copy payload'), 1200);
+          });
+        });
+      }
+
+      function collarCard(collar) {
+        const payload = `smartcollar://app/pair-collar?device_id=${encodeURIComponent(collar.device_id)}`;
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(payload)}`;
+        const lastSeen = collar.last_seen ? new Date(collar.last_seen).toLocaleString() : 'Not seen yet';
+        const statusClass = collar.is_online ? 'status' : 'status offline';
+        const pairedLabel = collar.is_paired ? 'Paired' : 'Unpaired';
+
+        return `
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <div class="label">Device ID</div>
+                <div class="device">${escapeHtml(collar.device_id)}</div>
+              </div>
+              <span class="${statusClass}">${collar.is_online ? 'Online' : 'Offline'}</span>
+            </div>
+            <div class="meta">
+              <div class="metric">
+                <div class="label">Pairing</div>
+                <div class="value">${pairedLabel}</div>
+              </div>
+              <div class="metric">
+                <div class="label">Last seen</div>
+                <div class="value">${escapeHtml(lastSeen)}</div>
+              </div>
+              <div class="metric">
+                <div class="label">Battery</div>
+                <div class="value">${collar.battery_pct ?? '--'}%</div>
+              </div>
+              <div class="metric">
+                <div class="label">Wi-Fi</div>
+                <div class="value">${collar.wifi_rssi ?? '--'}</div>
+              </div>
+            </div>
+            <div class="qr">
+              <img src="${qrUrl}" alt="QR code for ${escapeHtml(collar.device_id)}" />
+              <div>
+                <div class="label">QR payload</div>
+                <code>${escapeHtml(payload)}</code>
+                <button class="secondary" type="button" data-copy="${escapeAttr(payload)}">Copy payload</button>
+              </div>
+            </div>
+          </article>
+        `;
+      }
+
+      function showNotice(message, isError = false) {
+        notice.textContent = message;
+        notice.className = `notice${isError ? ' error' : ''}`;
+        notice.style.display = message ? 'block' : 'none';
+      }
+
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, (char) => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;',
+        })[char]);
+      }
+
+      function escapeAttr(value) {
+        return escapeHtml(value).replace(/`/g, '&#096;');
+      }
+    </script>
+  </body>
+</html>

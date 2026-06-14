@@ -10,6 +10,7 @@ export const config = {
   mqttUrl: process.env.MQTT_URL ?? 'mqtt://localhost:1883',
   mqttUsername: process.env.MQTT_USERNAME,
   mqttPassword: process.env.MQTT_PASSWORD,
+  manufacturerKey: process.env.MANUFACTURER_KEY,
   corsOrigin: process.env.CORS_ORIGIN ?? '*'
 };
 

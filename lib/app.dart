@@ -49,7 +49,9 @@ class SmartCollarApp extends StatelessWidget {
       GoRoute(path: '/add-animal', builder: (_, _) => const AddAnimalScreen()),
       GoRoute(
         path: '/pair-collar',
-        builder: (_, _) => const PairCollarScreen(),
+        builder: (_, state) => PairCollarScreen(
+          initialDeviceId: state.uri.queryParameters['device_id'],
+        ),
       ),
       GoRoute(
         path: '/wifi-config',

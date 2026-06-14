@@ -29,6 +29,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     ),
   ];
   String? _selectedCollarId;
+  bool _isTyping = false;
 
   @override
   void dispose() {
@@ -60,6 +61,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       data: (collars) => _ChatBody(
         controller: _controller,
         messages: _messages,
+        isTyping: _isTyping,
         examples: ChatAdvisor.examples,
         collars: collars,
         selectedCollarId: _selectedCollarId,
@@ -71,9 +73,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
   }
 
-  void _send(String value, ReadingsState readingsState) {
+  Future<void> _send(String value, ReadingsState readingsState) async {
     final text = value.trim();
-    if (text.isEmpty) return;
+    if (text.isEmpty || _isTyping) return;
     final farmReadings = readingsState.latestByCollar.values.toList();
     final selectedReading = _selectedCollarId == null
         ? null
@@ -85,9 +87,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
     setState(() {
       _messages.add(_ChatMessage(text: text, fromUser: true));
-      _messages.add(_ChatMessage(text: reply, fromUser: false));
+      _isTyping = true;
     });
     _controller.clear();
+
+    await Future<void>.delayed(const Duration(milliseconds: 1200));
+    if (!mounted) return;
+
+    setState(() {
+      _isTyping = false;
+      _messages.add(_ChatMessage(text: reply, fromUser: false));
+    });
   }
 }
 
@@ -95,6 +105,7 @@ class _ChatBody extends StatelessWidget {
   const _ChatBody({
     required this.controller,
     required this.messages,
+    required this.isTyping,
     required this.examples,
     required this.collars,
     required this.selectedCollarId,
@@ -106,6 +117,7 @@ class _ChatBody extends StatelessWidget {
 
   final TextEditingController controller;
   final List<_ChatMessage> messages;
+  final bool isTyping;
   final List<String> examples;
   final List<Collar> collars;
   final String? selectedCollarId;
@@ -178,7 +190,7 @@ class _ChatBody extends StatelessWidget {
               final example = examples[index];
               return ActionChip(
                 label: Text(example),
-                onPressed: () => onSend(example),
+                onPressed: isTyping ? null : () => onSend(example),
                 backgroundColor: kBgCard,
                 side: const BorderSide(color: kAccentSoft),
                 labelStyle: const TextStyle(color: kTextSecond),
@@ -192,9 +204,11 @@ class _ChatBody extends StatelessWidget {
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: messages.length,
-            itemBuilder: (context, index) =>
-                _MessageBubble(message: messages[index]),
+            itemCount: messages.length + (isTyping ? 1 : 0),
+            itemBuilder: (context, index) {
+              if (index == messages.length) return const _TypingBubble();
+              return _MessageBubble(message: messages[index]);
+            },
           ),
         ),
         SafeArea(
@@ -216,7 +230,7 @@ class _ChatBody extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 IconButton.filled(
-                  onPressed: () => onSend(controller.text),
+                  onPressed: isTyping ? null : () => onSend(controller.text),
                   icon: const Icon(Icons.send_rounded),
                 ),
               ],
@@ -337,6 +351,90 @@ class _MessageBubble extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _TypingBubble extends StatefulWidget {
+  const _TypingBubble();
+
+  @override
+  State<_TypingBubble> createState() => _TypingBubbleState();
+}
+
+class _TypingBubbleState extends State<_TypingBubble>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: kBgCard,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: kAccentSoft),
+          ),
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, _) {
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(
+                  3,
+                  (index) => _TypingDot(offset: _dotOffset(index)),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  double _dotOffset(int index) {
+    final progress = (_controller.value + (index * 0.18)) % 1;
+    return progress < 0.5 ? -4 * progress : -4 * (1 - progress);
+  }
+}
+
+class _TypingDot extends StatelessWidget {
+  const _TypingDot({required this.offset});
+
+  final double offset;
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.translate(
+      offset: Offset(0, offset),
+      child: Container(
+        width: 7,
+        height: 7,
+        margin: const EdgeInsets.symmetric(horizontal: 3),
+        decoration: const BoxDecoration(
+          color: kTextSecond,
+          shape: BoxShape.circle,
+        ),
       ),
     );
   }

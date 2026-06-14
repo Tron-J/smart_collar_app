@@ -124,10 +124,63 @@ class CollarDetailScreen extends ConsumerWidget {
               detail: animalStateDetail(reading),
               chart: const ActivityBarWidget(),
             ),
+            const SizedBox(height: 20),
+            OutlinedButton.icon(
+              onPressed: () => _confirmDisconnect(context, ref, collar),
+              icon: const Icon(Icons.link_off_rounded),
+              label: const Text('Disconnect collar'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: kDanger,
+                side: const BorderSide(color: kDanger),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+              ),
+            ),
           ],
         );
       },
     );
+  }
+}
+
+Future<void> _confirmDisconnect(
+  BuildContext context,
+  WidgetRef ref,
+  Collar collar,
+) async {
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Disconnect collar?'),
+      content: Text(
+        'This will remove ${collar.deviceId} from this farm. It can then be paired by another account.',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          child: const Text('Disconnect'),
+        ),
+      ],
+    ),
+  );
+  if (confirmed != true || !context.mounted) return;
+
+  try {
+    await ref.read(herdRepositoryProvider).disconnectCollar(collar.id);
+    ref.invalidate(farmCollarsProvider);
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Collar disconnected')));
+    context.go('/collars');
+  } catch (error) {
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(error.toString())));
   }
 }
 

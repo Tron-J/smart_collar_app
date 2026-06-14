@@ -1,5 +1,6 @@
 import express from 'express';
 import { requireAuth } from './auth.js';
+import { config } from './config.js';
 import { firstRow, pool, query } from './db.js';
 
 export const router = express.Router();
@@ -68,6 +69,25 @@ router.get('/health/farm-write', async (_req, res, next) => {
     });
   } finally {
     client.release();
+  }
+});
+
+router.get('/manufacturer/collars', requireManufacturerAccess, async (req, res, next) => {
+  try {
+    const status = req.query.status === 'all' ? 'all' : 'unpaired';
+    const whereClause = status === 'all' ? '' : 'WHERE farm_id IS NULL';
+    const result = await query(
+      `SELECT
+        id, device_id, is_online, last_seen, battery_pct, wifi_rssi,
+        firmware_version, created_at, farm_id IS NOT NULL AS is_paired
+       FROM collars
+       ${whereClause}
+       ORDER BY last_seen DESC NULLS LAST, created_at DESC
+       LIMIT 200`
+    );
+    res.json({ data: result.rows });
+  } catch (error) {
+    next(error);
   }
 });
 
@@ -175,6 +195,18 @@ router.get('/farms/:farmId/collars', async (req, res, next) => {
 router.post('/collars/pair', async (req, res, next) => {
   try {
     const { device_id, farm_id, animal_id } = req.body;
+    const animal = firstRow(
+      await query(
+        `SELECT animals.id FROM animals
+         JOIN farms ON farms.id = animals.farm_id
+         WHERE animals.id = $1 AND animals.farm_id = $2 AND farms.user_id = $3`,
+        [animal_id, farm_id, req.user.id]
+      )
+    );
+    if (!animal) {
+      return res.status(404).json({ message: 'Animal or farm not found for this account' });
+    }
+
     const existing = await query('SELECT * FROM collars WHERE device_id = $1', [device_id]);
     let collar = firstRow(existing);
     if (collar?.farm_id) {
@@ -192,6 +224,23 @@ router.post('/collars/pair', async (req, res, next) => {
           [device_id, farm_id, animal_id]
         );
     res.status(201).json({ data: firstRow(result) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.patch('/collars/:id/disconnect', async (req, res, next) => {
+  try {
+    const result = await query(
+      `UPDATE collars SET farm_id = NULL, animal_id = NULL
+       WHERE id = $1
+       AND farm_id IN (SELECT id FROM farms WHERE user_id = $2)
+       RETURNING *`,
+      [req.params.id, req.user.id]
+    );
+    const collar = firstRow(result);
+    if (!collar) return res.status(404).json({ message: 'Collar not found for this account' });
+    res.json({ data: collar });
   } catch (error) {
     next(error);
   }
@@ -312,6 +361,13 @@ router.patch('/thresholds/:id', async (req, res, next) => {
     next(error);
   }
 });
+
+function requireManufacturerAccess(req, res, next) {
+  if (!config.manufacturerKey) return next();
+  const providedKey = req.headers['x-manufacturer-key'] ?? req.query.key;
+  if (providedKey === config.manufacturerKey) return next();
+  res.status(401).json({ message: 'Manufacturer key is required' });
+}
 
 async function syncAuthenticatedUser(req, _res, next) {
   const client = await pool.connect();
