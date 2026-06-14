@@ -2,7 +2,9 @@ import pg from 'pg';
 import { config } from './config.js';
 
 export const pool = new pg.Pool({
-  connectionString: config.databaseUrl
+  connectionString: config.databaseUrl,
+  ssl: shouldUseSsl(config.databaseUrl) ? { rejectUnauthorized: false } : false,
+  connectionTimeoutMillis: 10000
 });
 
 export async function query(text, params = []) {
@@ -12,4 +14,8 @@ export async function query(text, params = []) {
 
 export function firstRow(result) {
   return result.rows[0] ?? null;
+}
+
+function shouldUseSsl(databaseUrl) {
+  return databaseUrl?.includes('supabase.co') || databaseUrl?.includes('sslmode=require');
 }
