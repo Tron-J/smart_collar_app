@@ -28,6 +28,9 @@ router.get('/farms', async (req, res, next) => {
 router.post('/farms', async (req, res, next) => {
   try {
     const { name, location, farm_type } = req.body;
+    if (!name || !farm_type) {
+      return res.status(400).json({ message: 'Farm name and type are required' });
+    }
     const result = await query(
       `INSERT INTO farms (user_id, name, location, farm_type)
        VALUES ($1,$2,$3,$4)
@@ -35,7 +38,11 @@ router.post('/farms', async (req, res, next) => {
       [req.user.id, name, location ?? null, farm_type]
     );
     const farm = firstRow(result);
-    await query('INSERT INTO alert_thresholds (farm_id) VALUES ($1)', [farm.id]);
+    try {
+      await query('INSERT INTO alert_thresholds (farm_id) VALUES ($1)', [farm.id]);
+    } catch (thresholdError) {
+      console.error('Default alert threshold creation failed', thresholdError);
+    }
     res.status(201).json({ data: farm });
   } catch (error) {
     next(error);
