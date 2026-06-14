@@ -16,7 +16,7 @@
 Update these constants in the sketch:
 
 ```cpp
-const char *DEVICE_ID = "SSTU234IX";
+const char *DEVICE_ID = "SC-000001";
 const char *WIFI_SSID = "your_wifi_name";
 const char *WIFI_PASSWORD = "your_wifi_password";
 const char *MQTT_HOST = "8e81645ecec344ecb81e049f54d241db.s1.eu.hivemq.cloud";

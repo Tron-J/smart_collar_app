@@ -95,7 +95,11 @@ class AuthRepository {
   }
 
   Future<bool> hasStoredToken() async {
-    return _supabase.auth.currentSession != null;
+    try {
+      return _supabase.auth.currentSession != null;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<void> logout() async {
