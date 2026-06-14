@@ -25,6 +25,27 @@ router.get('/health/db', async (_req, res, next) => {
   }
 });
 
+router.get('/health/farm-write', async (_req, res, next) => {
+  try {
+    await query('BEGIN');
+    const result = await query(
+      `INSERT INTO farms (user_id, name, location, farm_type)
+       VALUES ($1,$2,$3,$4)
+       RETURNING id, user_id, name, location, farm_type`,
+      ['00000000-0000-0000-0000-000000000000', 'Health check farm', 'Health check', 'mixed']
+    );
+    await query('ROLLBACK');
+    res.json({ ok: true, data: firstRow(result) });
+  } catch (error) {
+    try {
+      await query('ROLLBACK');
+    } catch {
+      // Ignore rollback failures so the original database error is returned.
+    }
+    next(error);
+  }
+});
+
 router.use(requireAuth);
 
 router.get('/system/version', (_req, res) => {
