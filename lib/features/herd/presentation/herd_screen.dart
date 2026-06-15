@@ -63,7 +63,7 @@ class _HerdScreenState extends ConsumerState<HerdScreen> {
                       species: animal.species,
                       subtitle:
                           '${animal.sex} | ${animal.ageMonths ?? '--'} months | ${animal.weightKg ?? '--'} kg',
-                      onTap: () => context.go('/herd/${animal.id}'),
+                      onTap: () => context.push('/herd/${animal.id}'),
                     ),
                   )
                   .toList(),

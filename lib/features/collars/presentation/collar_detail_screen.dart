@@ -59,7 +59,13 @@ class CollarDetailScreen extends ConsumerWidget {
             Row(
               children: [
                 IconButton(
-                  onPressed: () => context.go('/collars'),
+                  onPressed: () {
+                    if (context.canPop()) {
+                      context.pop();
+                    } else {
+                      context.go('/collars');
+                    }
+                  },
                   icon: const Icon(Icons.arrow_back_rounded),
                 ),
                 const SizedBox(width: 4),

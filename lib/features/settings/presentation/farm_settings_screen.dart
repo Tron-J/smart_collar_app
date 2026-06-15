@@ -23,19 +23,19 @@ class FarmSettingsScreen extends StatelessWidget {
           title: 'Farm setup',
           subtitle: 'Update the farm used by this device.',
           icon: Icons.agriculture_outlined,
-          onTap: () => context.go('/farm-setup'),
+          onTap: () => context.push('/farm-setup'),
         ),
         _ActionTile(
           title: 'Add animal',
           subtitle: 'Register a new animal profile.',
           icon: Icons.add_circle_outline_rounded,
-          onTap: () => context.go('/add-animal'),
+          onTap: () => context.push('/add-animal'),
         ),
         _ActionTile(
           title: 'Pair collar',
           subtitle: 'Connect a collar to the farm.',
           icon: Icons.memory_rounded,
-          onTap: () => context.go('/pair-collar'),
+          onTap: () => context.push('/pair-collar'),
         ),
       ],
     );

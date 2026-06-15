@@ -394,7 +394,7 @@ class _ConnectCollarGuideCard extends StatelessWidget {
           const SizedBox(height: 14),
           PrimaryButton.filled(
             label: 'Add animal and collar',
-            onPressed: () => context.go('/add-animal'),
+            onPressed: () => context.push('/add-animal'),
           ),
         ],
       ),

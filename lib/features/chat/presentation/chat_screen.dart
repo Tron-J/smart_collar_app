@@ -66,7 +66,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         collars: collars,
         selectedCollarId: _selectedCollarId,
         readingsState: readingsState,
-        onBack: () => context.go('/dashboard'),
+        onBack: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.go('/dashboard');
+          }
+        },
         onSelectCollar: (value) => setState(() => _selectedCollarId = value),
         onSend: (text) => _send(text, readingsState),
       ),

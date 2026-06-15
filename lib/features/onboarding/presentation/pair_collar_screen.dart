@@ -154,7 +154,7 @@ class _PairCollarScreenState extends ConsumerState<PairCollarScreen> {
                                   .read(onboardingControllerProvider.notifier)
                                   .pairCollar(_deviceIdController.text);
                               if (!context.mounted) return;
-                              context.go('/wifi-config');
+                              context.push('/wifi-config');
                             } catch (error) {
                               if (!mounted) return;
                               setState(() => _errorMessage = error.toString());

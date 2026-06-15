@@ -130,7 +130,7 @@ class _AddAnimalScreenState extends ConsumerState<AddAnimalScreen> {
                                     ),
                                   );
                               if (!context.mounted) return;
-                              context.go('/pair-collar');
+                              context.push('/pair-collar');
                             } catch (error) {
                               if (!mounted) return;
                               setState(() => _errorMessage = error.toString());

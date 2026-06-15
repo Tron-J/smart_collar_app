@@ -21,27 +21,30 @@ class SettingsScreen extends StatelessWidget {
         const SizedBox(height: 20),
         _SectionTile(
           title: 'Profile',
-          onTap: () => context.go('/settings/profile'),
+          onTap: () => context.push('/settings/profile'),
         ),
-        _SectionTile(title: 'Farm', onTap: () => context.go('/settings/farm')),
-        _SectionTile(title: 'Herd', onTap: () => context.go('/herd')),
+        _SectionTile(
+          title: 'Farm',
+          onTap: () => context.push('/settings/farm'),
+        ),
+        _SectionTile(title: 'Herd', onTap: () => context.push('/herd')),
         _SectionTile(
           title: 'Collar management',
-          onTap: () => context.go('/collars'),
+          onTap: () => context.push('/collars'),
         ),
         _SectionTile(
           title: 'Notifications',
-          onTap: () => context.go('/settings/notifications'),
+          onTap: () => context.push('/settings/notifications'),
         ),
         _SectionTile(
           title: 'Alert thresholds',
-          onTap: () => context.go('/alerts/thresholds'),
+          onTap: () => context.push('/alerts/thresholds'),
         ),
         _SectionTile(
           title: 'Data & Privacy',
-          onTap: () => context.go('/settings/privacy'),
+          onTap: () => context.push('/settings/privacy'),
         ),
-        _SectionTile(title: 'About', onTap: () => context.go('/about')),
+        _SectionTile(title: 'About', onTap: () => context.push('/about')),
       ],
     );
   }

@@ -58,7 +58,7 @@ class SetupCompleteScreen extends ConsumerWidget {
             const Spacer(),
             PrimaryButton.filled(
               label: 'Add another animal and collar',
-              onPressed: () => context.go('/add-animal'),
+              onPressed: () => context.push('/add-animal'),
             ),
             const SizedBox(height: 12),
             PrimaryButton.outlined(

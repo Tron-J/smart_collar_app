@@ -86,7 +86,7 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen> {
                   padding: const EdgeInsets.only(bottom: 12),
                   child: AlertCard(
                     alert: alert,
-                    onTap: () => context.go('/alerts/${alert.id}'),
+                    onTap: () => context.push('/alerts/${alert.id}'),
                   ),
                 );
               },

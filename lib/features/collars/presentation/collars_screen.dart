@@ -30,7 +30,7 @@ class CollarsScreen extends ConsumerWidget {
         const SizedBox(height: 16),
         PrimaryButton.filled(
           label: 'Add animal and collar',
-          onPressed: () => context.go('/add-animal'),
+          onPressed: () => context.push('/add-animal'),
         ),
         const SizedBox(height: 16),
         collarsValue.when(
@@ -48,7 +48,7 @@ class CollarsScreen extends ConsumerWidget {
                   .map(
                     (collar) => _CollarCard(
                       collar: collar,
-                      onTap: () => context.go('/collars/${collar.id}'),
+                      onTap: () => context.push('/collars/${collar.id}'),
                     ),
                   )
                   .toList(),

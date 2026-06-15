@@ -63,7 +63,7 @@ class WifiConfigScreen extends StatelessWidget {
             const SizedBox(height: 24),
             PrimaryButton.filled(
               label: 'Continue',
-              onPressed: () => context.go('/setup-complete'),
+              onPressed: () => context.push('/setup-complete'),
             ),
           ],
         ),

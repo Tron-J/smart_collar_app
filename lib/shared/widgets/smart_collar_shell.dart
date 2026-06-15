@@ -26,39 +26,52 @@ class SmartCollarShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final index = _indexFromLocation();
-    return Scaffold(
-      backgroundColor: kBgDeep,
-      body: SafeArea(child: child),
-      floatingActionButton: location.startsWith('/chat')
-          ? null
-          : FloatingActionButton(
-              onPressed: () => context.go('/chat'),
-              backgroundColor: kAccentPrimary,
-              foregroundColor: kTextPrimary,
-              tooltip: 'Open health assistant',
-              child: const Icon(Icons.chat_bubble_outline_rounded),
-            ),
-      bottomNavigationBar: _BottomNavBar(
-        currentIndex: index,
-        onTap: (next) {
-          switch (next) {
-            case 0:
-              context.go('/dashboard');
-              break;
-            case 1:
-              context.go('/collars');
-              break;
-            case 2:
-              context.go('/alerts');
-              break;
-            case 3:
-              context.go('/history');
-              break;
-            case 4:
-              context.go('/settings');
-              break;
-          }
-        },
+    return PopScope(
+      canPop: location.startsWith('/dashboard'),
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        if (context.canPop()) {
+          context.pop();
+          return;
+        }
+        if (!location.startsWith('/dashboard')) {
+          context.go('/dashboard');
+        }
+      },
+      child: Scaffold(
+        backgroundColor: kBgDeep,
+        body: SafeArea(child: child),
+        floatingActionButton: location.startsWith('/chat')
+            ? null
+            : FloatingActionButton(
+                onPressed: () => context.push('/chat'),
+                backgroundColor: kAccentPrimary,
+                foregroundColor: kTextPrimary,
+                tooltip: 'Open health assistant',
+                child: const Icon(Icons.chat_bubble_outline_rounded),
+              ),
+        bottomNavigationBar: _BottomNavBar(
+          currentIndex: index,
+          onTap: (next) {
+            switch (next) {
+              case 0:
+                context.go('/dashboard');
+                break;
+              case 1:
+                context.go('/collars');
+                break;
+              case 2:
+                context.go('/alerts');
+                break;
+              case 3:
+                context.go('/history');
+                break;
+              case 4:
+                context.go('/settings');
+                break;
+            }
+          },
+        ),
       ),
     );
   }
