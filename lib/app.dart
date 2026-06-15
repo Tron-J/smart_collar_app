@@ -46,7 +46,12 @@ class SmartCollarApp extends StatelessWidget {
         builder: (_, _) => const VerifyEmailScreen(),
       ),
       GoRoute(path: '/farm-setup', builder: (_, _) => const FarmSetupScreen()),
-      GoRoute(path: '/add-animal', builder: (_, _) => const AddAnimalScreen()),
+      GoRoute(
+        path: '/add-animal',
+        builder: (_, state) => AddAnimalScreen(
+          initialDeviceId: state.uri.queryParameters['device_id'],
+        ),
+      ),
       GoRoute(
         path: '/pair-collar',
         builder: (_, state) => PairCollarScreen(

@@ -23,18 +23,29 @@ SensorReading _$SensorReadingFromJson(Map<String, dynamic> json) {
 mixin _$SensorReading {
   String get collarId => throw _privateConstructorUsedError;
   String get animalId => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: doubleFromJson)
   double get tempC => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: intFromJson)
   int get heartRateBpm => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: doubleFromJson)
   double get spo2Pct => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: doubleFromJson)
   double get accelX => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: doubleFromJson)
   double get accelY => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: doubleFromJson)
   double get accelZ => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: intFromJson)
   int get activityIndex => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: doubleFromJson)
   double get mcuTempC => throw _privateConstructorUsedError;
   String get behavior => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: intFromJson)
   int get pprRiskScore => throw _privateConstructorUsedError;
   bool get isAnomaly => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: intFromJson)
   int get batteryPct => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: intFromJson)
   int get wifiRssi => throw _privateConstructorUsedError;
   DateTime get recordedAt => throw _privateConstructorUsedError;
 
@@ -58,19 +69,19 @@ abstract class $SensorReadingCopyWith<$Res> {
   $Res call({
     String collarId,
     String animalId,
-    double tempC,
-    int heartRateBpm,
-    double spo2Pct,
-    double accelX,
-    double accelY,
-    double accelZ,
-    int activityIndex,
-    double mcuTempC,
+    @JsonKey(fromJson: doubleFromJson) double tempC,
+    @JsonKey(fromJson: intFromJson) int heartRateBpm,
+    @JsonKey(fromJson: doubleFromJson) double spo2Pct,
+    @JsonKey(fromJson: doubleFromJson) double accelX,
+    @JsonKey(fromJson: doubleFromJson) double accelY,
+    @JsonKey(fromJson: doubleFromJson) double accelZ,
+    @JsonKey(fromJson: intFromJson) int activityIndex,
+    @JsonKey(fromJson: doubleFromJson) double mcuTempC,
     String behavior,
-    int pprRiskScore,
+    @JsonKey(fromJson: intFromJson) int pprRiskScore,
     bool isAnomaly,
-    int batteryPct,
-    int wifiRssi,
+    @JsonKey(fromJson: intFromJson) int batteryPct,
+    @JsonKey(fromJson: intFromJson) int wifiRssi,
     DateTime recordedAt,
   });
 }
@@ -191,19 +202,19 @@ abstract class _$$SensorReadingImplCopyWith<$Res>
   $Res call({
     String collarId,
     String animalId,
-    double tempC,
-    int heartRateBpm,
-    double spo2Pct,
-    double accelX,
-    double accelY,
-    double accelZ,
-    int activityIndex,
-    double mcuTempC,
+    @JsonKey(fromJson: doubleFromJson) double tempC,
+    @JsonKey(fromJson: intFromJson) int heartRateBpm,
+    @JsonKey(fromJson: doubleFromJson) double spo2Pct,
+    @JsonKey(fromJson: doubleFromJson) double accelX,
+    @JsonKey(fromJson: doubleFromJson) double accelY,
+    @JsonKey(fromJson: doubleFromJson) double accelZ,
+    @JsonKey(fromJson: intFromJson) int activityIndex,
+    @JsonKey(fromJson: doubleFromJson) double mcuTempC,
     String behavior,
-    int pprRiskScore,
+    @JsonKey(fromJson: intFromJson) int pprRiskScore,
     bool isAnomaly,
-    int batteryPct,
-    int wifiRssi,
+    @JsonKey(fromJson: intFromJson) int batteryPct,
+    @JsonKey(fromJson: intFromJson) int wifiRssi,
     DateTime recordedAt,
   });
 }
@@ -317,19 +328,19 @@ class _$SensorReadingImpl implements _SensorReading {
   const _$SensorReadingImpl({
     required this.collarId,
     required this.animalId,
-    required this.tempC,
-    required this.heartRateBpm,
-    required this.spo2Pct,
-    required this.accelX,
-    required this.accelY,
-    required this.accelZ,
-    required this.activityIndex,
-    required this.mcuTempC,
+    @JsonKey(fromJson: doubleFromJson) required this.tempC,
+    @JsonKey(fromJson: intFromJson) required this.heartRateBpm,
+    @JsonKey(fromJson: doubleFromJson) required this.spo2Pct,
+    @JsonKey(fromJson: doubleFromJson) required this.accelX,
+    @JsonKey(fromJson: doubleFromJson) required this.accelY,
+    @JsonKey(fromJson: doubleFromJson) required this.accelZ,
+    @JsonKey(fromJson: intFromJson) required this.activityIndex,
+    @JsonKey(fromJson: doubleFromJson) required this.mcuTempC,
     required this.behavior,
-    required this.pprRiskScore,
+    @JsonKey(fromJson: intFromJson) required this.pprRiskScore,
     required this.isAnomaly,
-    required this.batteryPct,
-    required this.wifiRssi,
+    @JsonKey(fromJson: intFromJson) required this.batteryPct,
+    @JsonKey(fromJson: intFromJson) required this.wifiRssi,
     required this.recordedAt,
   });
 
@@ -341,30 +352,41 @@ class _$SensorReadingImpl implements _SensorReading {
   @override
   final String animalId;
   @override
+  @JsonKey(fromJson: doubleFromJson)
   final double tempC;
   @override
+  @JsonKey(fromJson: intFromJson)
   final int heartRateBpm;
   @override
+  @JsonKey(fromJson: doubleFromJson)
   final double spo2Pct;
   @override
+  @JsonKey(fromJson: doubleFromJson)
   final double accelX;
   @override
+  @JsonKey(fromJson: doubleFromJson)
   final double accelY;
   @override
+  @JsonKey(fromJson: doubleFromJson)
   final double accelZ;
   @override
+  @JsonKey(fromJson: intFromJson)
   final int activityIndex;
   @override
+  @JsonKey(fromJson: doubleFromJson)
   final double mcuTempC;
   @override
   final String behavior;
   @override
+  @JsonKey(fromJson: intFromJson)
   final int pprRiskScore;
   @override
   final bool isAnomaly;
   @override
+  @JsonKey(fromJson: intFromJson)
   final int batteryPct;
   @override
+  @JsonKey(fromJson: intFromJson)
   final int wifiRssi;
   @override
   final DateTime recordedAt;
@@ -448,19 +470,19 @@ abstract class _SensorReading implements SensorReading {
   const factory _SensorReading({
     required final String collarId,
     required final String animalId,
-    required final double tempC,
-    required final int heartRateBpm,
-    required final double spo2Pct,
-    required final double accelX,
-    required final double accelY,
-    required final double accelZ,
-    required final int activityIndex,
-    required final double mcuTempC,
+    @JsonKey(fromJson: doubleFromJson) required final double tempC,
+    @JsonKey(fromJson: intFromJson) required final int heartRateBpm,
+    @JsonKey(fromJson: doubleFromJson) required final double spo2Pct,
+    @JsonKey(fromJson: doubleFromJson) required final double accelX,
+    @JsonKey(fromJson: doubleFromJson) required final double accelY,
+    @JsonKey(fromJson: doubleFromJson) required final double accelZ,
+    @JsonKey(fromJson: intFromJson) required final int activityIndex,
+    @JsonKey(fromJson: doubleFromJson) required final double mcuTempC,
     required final String behavior,
-    required final int pprRiskScore,
+    @JsonKey(fromJson: intFromJson) required final int pprRiskScore,
     required final bool isAnomaly,
-    required final int batteryPct,
-    required final int wifiRssi,
+    @JsonKey(fromJson: intFromJson) required final int batteryPct,
+    @JsonKey(fromJson: intFromJson) required final int wifiRssi,
     required final DateTime recordedAt,
   }) = _$SensorReadingImpl;
 
@@ -472,30 +494,41 @@ abstract class _SensorReading implements SensorReading {
   @override
   String get animalId;
   @override
+  @JsonKey(fromJson: doubleFromJson)
   double get tempC;
   @override
+  @JsonKey(fromJson: intFromJson)
   int get heartRateBpm;
   @override
+  @JsonKey(fromJson: doubleFromJson)
   double get spo2Pct;
   @override
+  @JsonKey(fromJson: doubleFromJson)
   double get accelX;
   @override
+  @JsonKey(fromJson: doubleFromJson)
   double get accelY;
   @override
+  @JsonKey(fromJson: doubleFromJson)
   double get accelZ;
   @override
+  @JsonKey(fromJson: intFromJson)
   int get activityIndex;
   @override
+  @JsonKey(fromJson: doubleFromJson)
   double get mcuTempC;
   @override
   String get behavior;
   @override
+  @JsonKey(fromJson: intFromJson)
   int get pprRiskScore;
   @override
   bool get isAnomaly;
   @override
+  @JsonKey(fromJson: intFromJson)
   int get batteryPct;
   @override
+  @JsonKey(fromJson: intFromJson)
   int get wifiRssi;
   @override
   DateTime get recordedAt;

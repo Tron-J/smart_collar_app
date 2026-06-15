@@ -81,10 +81,10 @@ https://smart-collar-app-backend.onrender.com/manufacturer/
 4. Copy or print the QR payload for that collar:
 
 ```text
-smartcollar://app/pair-collar?device_id=DEVICE_ID
+smartcollar://app/add-animal?device_id=DEVICE_ID
 ```
 
-5. The farmer scans the QR with the phone camera. The app opens the pair screen with the Device ID already filled.
+5. The farmer scans the QR with the phone camera. The app opens the animal registration screen with the collar ID already filled.
 
 ## Test Without Hardware
 

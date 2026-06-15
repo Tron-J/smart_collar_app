@@ -24,11 +24,17 @@ mixin _$AlertThreshold {
   String get id => throw _privateConstructorUsedError;
   String get farmId => throw _privateConstructorUsedError;
   String? get animalId => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: doubleFromJson)
   double get tempHighC => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: doubleFromJson)
   double get tempLowC => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: intFromJson)
   int get hrHighBpm => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: intFromJson)
   int get hrLowBpm => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: intFromJson)
   int get activityLowPct => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: intFromJson)
   int get pprRiskThreshold => throw _privateConstructorUsedError;
 
   /// Serializes this AlertThreshold to a JSON map.
@@ -52,12 +58,12 @@ abstract class $AlertThresholdCopyWith<$Res> {
     String id,
     String farmId,
     String? animalId,
-    double tempHighC,
-    double tempLowC,
-    int hrHighBpm,
-    int hrLowBpm,
-    int activityLowPct,
-    int pprRiskThreshold,
+    @JsonKey(fromJson: doubleFromJson) double tempHighC,
+    @JsonKey(fromJson: doubleFromJson) double tempLowC,
+    @JsonKey(fromJson: intFromJson) int hrHighBpm,
+    @JsonKey(fromJson: intFromJson) int hrLowBpm,
+    @JsonKey(fromJson: intFromJson) int activityLowPct,
+    @JsonKey(fromJson: intFromJson) int pprRiskThreshold,
   });
 }
 
@@ -143,12 +149,12 @@ abstract class _$$AlertThresholdImplCopyWith<$Res>
     String id,
     String farmId,
     String? animalId,
-    double tempHighC,
-    double tempLowC,
-    int hrHighBpm,
-    int hrLowBpm,
-    int activityLowPct,
-    int pprRiskThreshold,
+    @JsonKey(fromJson: doubleFromJson) double tempHighC,
+    @JsonKey(fromJson: doubleFromJson) double tempLowC,
+    @JsonKey(fromJson: intFromJson) int hrHighBpm,
+    @JsonKey(fromJson: intFromJson) int hrLowBpm,
+    @JsonKey(fromJson: intFromJson) int activityLowPct,
+    @JsonKey(fromJson: intFromJson) int pprRiskThreshold,
   });
 }
 
@@ -227,12 +233,12 @@ class _$AlertThresholdImpl implements _AlertThreshold {
     required this.id,
     required this.farmId,
     this.animalId,
-    required this.tempHighC,
-    required this.tempLowC,
-    required this.hrHighBpm,
-    required this.hrLowBpm,
-    required this.activityLowPct,
-    required this.pprRiskThreshold,
+    @JsonKey(fromJson: doubleFromJson) required this.tempHighC,
+    @JsonKey(fromJson: doubleFromJson) required this.tempLowC,
+    @JsonKey(fromJson: intFromJson) required this.hrHighBpm,
+    @JsonKey(fromJson: intFromJson) required this.hrLowBpm,
+    @JsonKey(fromJson: intFromJson) required this.activityLowPct,
+    @JsonKey(fromJson: intFromJson) required this.pprRiskThreshold,
   });
 
   factory _$AlertThresholdImpl.fromJson(Map<String, dynamic> json) =>
@@ -245,16 +251,22 @@ class _$AlertThresholdImpl implements _AlertThreshold {
   @override
   final String? animalId;
   @override
+  @JsonKey(fromJson: doubleFromJson)
   final double tempHighC;
   @override
+  @JsonKey(fromJson: doubleFromJson)
   final double tempLowC;
   @override
+  @JsonKey(fromJson: intFromJson)
   final int hrHighBpm;
   @override
+  @JsonKey(fromJson: intFromJson)
   final int hrLowBpm;
   @override
+  @JsonKey(fromJson: intFromJson)
   final int activityLowPct;
   @override
+  @JsonKey(fromJson: intFromJson)
   final int pprRiskThreshold;
 
   @override
@@ -322,12 +334,12 @@ abstract class _AlertThreshold implements AlertThreshold {
     required final String id,
     required final String farmId,
     final String? animalId,
-    required final double tempHighC,
-    required final double tempLowC,
-    required final int hrHighBpm,
-    required final int hrLowBpm,
-    required final int activityLowPct,
-    required final int pprRiskThreshold,
+    @JsonKey(fromJson: doubleFromJson) required final double tempHighC,
+    @JsonKey(fromJson: doubleFromJson) required final double tempLowC,
+    @JsonKey(fromJson: intFromJson) required final int hrHighBpm,
+    @JsonKey(fromJson: intFromJson) required final int hrLowBpm,
+    @JsonKey(fromJson: intFromJson) required final int activityLowPct,
+    @JsonKey(fromJson: intFromJson) required final int pprRiskThreshold,
   }) = _$AlertThresholdImpl;
 
   factory _AlertThreshold.fromJson(Map<String, dynamic> json) =
@@ -340,16 +352,22 @@ abstract class _AlertThreshold implements AlertThreshold {
   @override
   String? get animalId;
   @override
+  @JsonKey(fromJson: doubleFromJson)
   double get tempHighC;
   @override
+  @JsonKey(fromJson: doubleFromJson)
   double get tempLowC;
   @override
+  @JsonKey(fromJson: intFromJson)
   int get hrHighBpm;
   @override
+  @JsonKey(fromJson: intFromJson)
   int get hrLowBpm;
   @override
+  @JsonKey(fromJson: intFromJson)
   int get activityLowPct;
   @override
+  @JsonKey(fromJson: intFromJson)
   int get pprRiskThreshold;
 
   /// Create a copy of AlertThreshold

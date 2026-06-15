@@ -12,8 +12,8 @@ _$AnimalImpl _$$AnimalImplFromJson(Map<String, dynamic> json) => _$AnimalImpl(
   animalTag: json['animal_tag'] as String,
   species: json['species'] as String,
   sex: json['sex'] as String,
-  ageMonths: (json['age_months'] as num?)?.toInt(),
-  weightKg: (json['weight_kg'] as num?)?.toDouble(),
+  ageMonths: nullableIntFromJson(json['age_months']),
+  weightKg: nullableDoubleFromJson(json['weight_kg']),
   notes: json['notes'] as String?,
   createdAt: json['created_at'] == null
       ? null

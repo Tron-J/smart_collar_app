@@ -28,8 +28,11 @@ mixin _$Alert {
   AlertType get alertType => throw _privateConstructorUsedError;
   AlertSeverity get severity => throw _privateConstructorUsedError;
   String get message => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: nullableDoubleFromJson)
   double? get tempAtAlert => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: nullableIntFromJson)
   int? get hrAtAlert => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: nullableIntFromJson)
   int? get riskScore => throw _privateConstructorUsedError;
   bool get isResolved => throw _privateConstructorUsedError;
   DateTime? get resolvedAt => throw _privateConstructorUsedError;
@@ -57,9 +60,9 @@ abstract class $AlertCopyWith<$Res> {
     AlertType alertType,
     AlertSeverity severity,
     String message,
-    double? tempAtAlert,
-    int? hrAtAlert,
-    int? riskScore,
+    @JsonKey(fromJson: nullableDoubleFromJson) double? tempAtAlert,
+    @JsonKey(fromJson: nullableIntFromJson) int? hrAtAlert,
+    @JsonKey(fromJson: nullableIntFromJson) int? riskScore,
     bool isResolved,
     DateTime? resolvedAt,
     DateTime createdAt,
@@ -171,9 +174,9 @@ abstract class _$$AlertImplCopyWith<$Res> implements $AlertCopyWith<$Res> {
     AlertType alertType,
     AlertSeverity severity,
     String message,
-    double? tempAtAlert,
-    int? hrAtAlert,
-    int? riskScore,
+    @JsonKey(fromJson: nullableDoubleFromJson) double? tempAtAlert,
+    @JsonKey(fromJson: nullableIntFromJson) int? hrAtAlert,
+    @JsonKey(fromJson: nullableIntFromJson) int? riskScore,
     bool isResolved,
     DateTime? resolvedAt,
     DateTime createdAt,
@@ -279,9 +282,9 @@ class _$AlertImpl implements _Alert {
     required this.alertType,
     required this.severity,
     required this.message,
-    this.tempAtAlert,
-    this.hrAtAlert,
-    this.riskScore,
+    @JsonKey(fromJson: nullableDoubleFromJson) this.tempAtAlert,
+    @JsonKey(fromJson: nullableIntFromJson) this.hrAtAlert,
+    @JsonKey(fromJson: nullableIntFromJson) this.riskScore,
     required this.isResolved,
     this.resolvedAt,
     required this.createdAt,
@@ -305,10 +308,13 @@ class _$AlertImpl implements _Alert {
   @override
   final String message;
   @override
+  @JsonKey(fromJson: nullableDoubleFromJson)
   final double? tempAtAlert;
   @override
+  @JsonKey(fromJson: nullableIntFromJson)
   final int? hrAtAlert;
   @override
+  @JsonKey(fromJson: nullableIntFromJson)
   final int? riskScore;
   @override
   final bool isResolved;
@@ -394,9 +400,9 @@ abstract class _Alert implements Alert {
     required final AlertType alertType,
     required final AlertSeverity severity,
     required final String message,
-    final double? tempAtAlert,
-    final int? hrAtAlert,
-    final int? riskScore,
+    @JsonKey(fromJson: nullableDoubleFromJson) final double? tempAtAlert,
+    @JsonKey(fromJson: nullableIntFromJson) final int? hrAtAlert,
+    @JsonKey(fromJson: nullableIntFromJson) final int? riskScore,
     required final bool isResolved,
     final DateTime? resolvedAt,
     required final DateTime createdAt,
@@ -419,10 +425,13 @@ abstract class _Alert implements Alert {
   @override
   String get message;
   @override
+  @JsonKey(fromJson: nullableDoubleFromJson)
   double? get tempAtAlert;
   @override
+  @JsonKey(fromJson: nullableIntFromJson)
   int? get hrAtAlert;
   @override
+  @JsonKey(fromJson: nullableIntFromJson)
   int? get riskScore;
   @override
   bool get isResolved;

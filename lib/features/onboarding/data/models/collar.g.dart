@@ -12,8 +12,8 @@ _$CollarImpl _$$CollarImplFromJson(Map<String, dynamic> json) => _$CollarImpl(
   farmId: json['farm_id'] as String?,
   animalId: json['animal_id'] as String?,
   firmwareVersion: json['firmware_version'] as String?,
-  batteryPct: (json['battery_pct'] as num?)?.toInt(),
-  wifiRssi: (json['wifi_rssi'] as num?)?.toInt(),
+  batteryPct: nullableIntFromJson(json['battery_pct']),
+  wifiRssi: nullableIntFromJson(json['wifi_rssi']),
   lastSeen: json['last_seen'] == null
       ? null
       : DateTime.parse(json['last_seen'] as String),

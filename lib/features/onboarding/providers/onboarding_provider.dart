@@ -110,6 +110,48 @@ class OnboardingController extends StateNotifier<AsyncValue<OnboardingState>> {
     }
   }
 
+  Future<AnimalCollarRegistration> createAnimalWithCollar({
+    required String animalTag,
+    required String species,
+    required String sex,
+    int? ageMonths,
+    double? weightKg,
+    required String deviceId,
+  }) async {
+    final previous = state.value ?? const OnboardingState();
+    final farmId =
+        previous.farm?.id ??
+        await _ref.read(secureStorageProvider).readCurrentFarmId();
+    if (farmId == null) {
+      throw StateError('Create a farm before adding animals.');
+    }
+    state = const AsyncLoading();
+    try {
+      final registration = await _repository.createAnimalWithCollar(
+        farmId: farmId,
+        animalTag: animalTag,
+        species: species,
+        sex: sex,
+        ageMonths: ageMonths,
+        weightKg: weightKg,
+        deviceId: deviceId,
+      );
+      await saveCurrentAnimalId(_ref, registration.animal.id);
+      _ref.invalidate(herdAnimalsProvider);
+      _ref.invalidate(farmCollarsProvider);
+      state = AsyncData(
+        previous.copyWith(
+          animal: registration.animal,
+          collar: registration.collar,
+        ),
+      );
+      return registration;
+    } catch (error, stackTrace) {
+      state = AsyncError(error, stackTrace);
+      rethrow;
+    }
+  }
+
   Future<Collar> pairCollar(String deviceId) async {
     final previous = state.value ?? const OnboardingState();
     final storage = _ref.read(secureStorageProvider);

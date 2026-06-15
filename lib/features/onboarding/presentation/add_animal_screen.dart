@@ -8,7 +8,9 @@ import 'package:smart_collar_app/shared/widgets/smart_collar_scaffold.dart';
 import 'package:smart_collar_app/shared/widgets/primary_button.dart';
 
 class AddAnimalScreen extends ConsumerStatefulWidget {
-  const AddAnimalScreen({super.key});
+  const AddAnimalScreen({super.key, this.initialDeviceId});
+
+  final String? initialDeviceId;
 
   @override
   ConsumerState<AddAnimalScreen> createState() => _AddAnimalScreenState();
@@ -19,15 +21,26 @@ class _AddAnimalScreenState extends ConsumerState<AddAnimalScreen> {
   final _tagController = TextEditingController();
   final _ageController = TextEditingController();
   final _weightController = TextEditingController();
+  final _deviceIdController = TextEditingController();
   String _species = 'sheep';
   String _sex = 'female';
   String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    final initialDeviceId = widget.initialDeviceId?.trim();
+    if (initialDeviceId != null && initialDeviceId.isNotEmpty) {
+      _deviceIdController.text = initialDeviceId;
+    }
+  }
 
   @override
   void dispose() {
     _tagController.dispose();
     _ageController.dispose();
     _weightController.dispose();
+    _deviceIdController.dispose();
     super.dispose();
   }
 
@@ -57,7 +70,7 @@ class _AddAnimalScreenState extends ConsumerState<AddAnimalScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Add the animal tag and basic details for monitoring.',
+                  'Add the animal details and the collar ID it will wear.',
                   style: Theme.of(
                     context,
                   ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
@@ -96,6 +109,15 @@ class _AddAnimalScreenState extends ConsumerState<AddAnimalScreen> {
                   decoration: const InputDecoration(labelText: 'Weight (kg)'),
                   keyboardType: TextInputType.number,
                 ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _deviceIdController,
+                  decoration: const InputDecoration(labelText: 'Collar ID'),
+                  textCapitalization: TextCapitalization.characters,
+                  validator: (value) => value == null || value.trim().isEmpty
+                      ? 'Collar ID required'
+                      : null,
+                ),
                 const SizedBox(height: 24),
                 if (_errorMessage != null) ...[
                   Text(
@@ -108,8 +130,8 @@ class _AddAnimalScreenState extends ConsumerState<AddAnimalScreen> {
                 ],
                 PrimaryButton.filled(
                   label: isLoading
-                      ? 'Adding animal...'
-                      : 'Continue to collar pairing',
+                      ? 'Registering animal...'
+                      : 'Register animal and collar',
                   onPressed: isLoading
                       ? null
                       : () async {
@@ -118,7 +140,7 @@ class _AddAnimalScreenState extends ConsumerState<AddAnimalScreen> {
                             try {
                               await ref
                                   .read(onboardingControllerProvider.notifier)
-                                  .createAnimal(
+                                  .createAnimalWithCollar(
                                     animalTag: _tagController.text,
                                     species: _species,
                                     sex: _sex,
@@ -128,9 +150,10 @@ class _AddAnimalScreenState extends ConsumerState<AddAnimalScreen> {
                                     weightKg: double.tryParse(
                                       _weightController.text,
                                     ),
+                                    deviceId: _deviceIdController.text,
                                   );
                               if (!context.mounted) return;
-                              context.push('/pair-collar');
+                              context.go('/setup-complete');
                             } catch (error) {
                               if (!mounted) return;
                               setState(() => _errorMessage = error.toString());

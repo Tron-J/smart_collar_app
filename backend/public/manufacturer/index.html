@@ -321,7 +321,7 @@
       }
 
       function collarCard(collar) {
-        const payload = `smartcollar://app/pair-collar?device_id=${encodeURIComponent(collar.device_id)}`;
+        const payload = `smartcollar://app/add-animal?device_id=${encodeURIComponent(collar.device_id)}`;
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(payload)}`;
         const lastSeen = collar.last_seen ? new Date(collar.last_seen).toLocaleString() : 'Not seen yet';
         const statusClass = collar.is_online ? 'status' : 'status offline';

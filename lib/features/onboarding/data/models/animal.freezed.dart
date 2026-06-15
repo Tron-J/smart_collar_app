@@ -26,7 +26,9 @@ mixin _$Animal {
   String get animalTag => throw _privateConstructorUsedError;
   String get species => throw _privateConstructorUsedError;
   String get sex => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: nullableIntFromJson)
   int? get ageMonths => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: nullableDoubleFromJson)
   double? get weightKg => throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
   DateTime? get createdAt => throw _privateConstructorUsedError;
@@ -51,8 +53,8 @@ abstract class $AnimalCopyWith<$Res> {
     String animalTag,
     String species,
     String sex,
-    int? ageMonths,
-    double? weightKg,
+    @JsonKey(fromJson: nullableIntFromJson) int? ageMonths,
+    @JsonKey(fromJson: nullableDoubleFromJson) double? weightKg,
     String? notes,
     DateTime? createdAt,
   });
@@ -141,8 +143,8 @@ abstract class _$$AnimalImplCopyWith<$Res> implements $AnimalCopyWith<$Res> {
     String animalTag,
     String species,
     String sex,
-    int? ageMonths,
-    double? weightKg,
+    @JsonKey(fromJson: nullableIntFromJson) int? ageMonths,
+    @JsonKey(fromJson: nullableDoubleFromJson) double? weightKg,
     String? notes,
     DateTime? createdAt,
   });
@@ -225,8 +227,8 @@ class _$AnimalImpl implements _Animal {
     required this.animalTag,
     required this.species,
     required this.sex,
-    this.ageMonths,
-    this.weightKg,
+    @JsonKey(fromJson: nullableIntFromJson) this.ageMonths,
+    @JsonKey(fromJson: nullableDoubleFromJson) this.weightKg,
     this.notes,
     this.createdAt,
   });
@@ -245,8 +247,10 @@ class _$AnimalImpl implements _Animal {
   @override
   final String sex;
   @override
+  @JsonKey(fromJson: nullableIntFromJson)
   final int? ageMonths;
   @override
+  @JsonKey(fromJson: nullableDoubleFromJson)
   final double? weightKg;
   @override
   final String? notes;
@@ -314,8 +318,8 @@ abstract class _Animal implements Animal {
     required final String animalTag,
     required final String species,
     required final String sex,
-    final int? ageMonths,
-    final double? weightKg,
+    @JsonKey(fromJson: nullableIntFromJson) final int? ageMonths,
+    @JsonKey(fromJson: nullableDoubleFromJson) final double? weightKg,
     final String? notes,
     final DateTime? createdAt,
   }) = _$AnimalImpl;
@@ -333,8 +337,10 @@ abstract class _Animal implements Animal {
   @override
   String get sex;
   @override
+  @JsonKey(fromJson: nullableIntFromJson)
   int? get ageMonths;
   @override
+  @JsonKey(fromJson: nullableDoubleFromJson)
   double? get weightKg;
   @override
   String? get notes;

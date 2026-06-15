@@ -170,6 +170,94 @@ router.post('/farms/:farmId/animals', async (req, res, next) => {
   }
 });
 
+router.post('/farms/:farmId/animals-with-collar', async (req, res, next) => {
+  const client = await pool.connect();
+  try {
+    const {
+      animal_tag,
+      species,
+      sex,
+      age_months,
+      weight_kg,
+      notes,
+      device_id
+    } = req.body;
+
+    if (!animal_tag || !species || !sex || !device_id) {
+      return res.status(400).json({ message: 'Animal details and collar ID are required' });
+    }
+
+    await client.query('BEGIN');
+
+    const farm = firstRow(
+      await client.query('SELECT id FROM farms WHERE id = $1 AND user_id = $2', [
+        req.params.farmId,
+        req.user.id
+      ])
+    );
+    if (!farm) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ message: 'Farm not found for this account' });
+    }
+
+    const existingCollar = firstRow(
+      await client.query('SELECT * FROM collars WHERE device_id = $1 FOR UPDATE', [
+        device_id.trim()
+      ])
+    );
+    if (existingCollar?.farm_id && existingCollar.farm_id !== req.params.farmId) {
+      await client.query('ROLLBACK');
+      return res.status(409).json({ message: 'Collar is already paired to another farm' });
+    }
+
+    const animal = firstRow(
+      await client.query(
+        `INSERT INTO animals (farm_id, animal_tag, species, sex, age_months, weight_kg, notes)
+         VALUES ($1,$2,$3,$4,$5,$6,$7)
+         RETURNING *`,
+        [
+          req.params.farmId,
+          animal_tag,
+          species,
+          sex,
+          age_months ?? null,
+          weight_kg ?? null,
+          notes ?? null
+        ]
+      )
+    );
+
+    const collar = firstRow(
+      existingCollar
+        ? await client.query(
+            `UPDATE collars
+             SET farm_id = $1, animal_id = $2
+             WHERE device_id = $3
+             RETURNING *`,
+            [req.params.farmId, animal.id, device_id.trim()]
+          )
+        : await client.query(
+            `INSERT INTO collars (device_id, farm_id, animal_id)
+             VALUES ($1,$2,$3)
+             RETURNING *`,
+            [device_id.trim(), req.params.farmId, animal.id]
+          )
+    );
+
+    await client.query('COMMIT');
+    res.status(201).json({ data: { animal, collar } });
+  } catch (error) {
+    try {
+      await client.query('ROLLBACK');
+    } catch {
+      // Ignore rollback failures so the original request error is reported.
+    }
+    next(error);
+  } finally {
+    client.release();
+  }
+});
+
 router.get('/animals/:id', async (req, res, next) => {
   try {
     const result = await query('SELECT * FROM animals WHERE id = $1', [req.params.id]);

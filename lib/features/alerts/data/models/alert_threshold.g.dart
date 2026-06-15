@@ -11,12 +11,12 @@ _$AlertThresholdImpl _$$AlertThresholdImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       farmId: json['farm_id'] as String,
       animalId: json['animal_id'] as String?,
-      tempHighC: (json['temp_high_c'] as num).toDouble(),
-      tempLowC: (json['temp_low_c'] as num).toDouble(),
-      hrHighBpm: (json['hr_high_bpm'] as num).toInt(),
-      hrLowBpm: (json['hr_low_bpm'] as num).toInt(),
-      activityLowPct: (json['activity_low_pct'] as num).toInt(),
-      pprRiskThreshold: (json['ppr_risk_threshold'] as num).toInt(),
+      tempHighC: doubleFromJson(json['temp_high_c']),
+      tempLowC: doubleFromJson(json['temp_low_c']),
+      hrHighBpm: intFromJson(json['hr_high_bpm']),
+      hrLowBpm: intFromJson(json['hr_low_bpm']),
+      activityLowPct: intFromJson(json['activity_low_pct']),
+      pprRiskThreshold: intFromJson(json['ppr_risk_threshold']),
     );
 
 Map<String, dynamic> _$$AlertThresholdImplToJson(

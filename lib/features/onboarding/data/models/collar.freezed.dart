@@ -26,7 +26,9 @@ mixin _$Collar {
   String? get farmId => throw _privateConstructorUsedError;
   String? get animalId => throw _privateConstructorUsedError;
   String? get firmwareVersion => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: nullableIntFromJson)
   int? get batteryPct => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: nullableIntFromJson)
   int? get wifiRssi => throw _privateConstructorUsedError;
   DateTime? get lastSeen => throw _privateConstructorUsedError;
   bool get isOnline => throw _privateConstructorUsedError;
@@ -52,8 +54,8 @@ abstract class $CollarCopyWith<$Res> {
     String? farmId,
     String? animalId,
     String? firmwareVersion,
-    int? batteryPct,
-    int? wifiRssi,
+    @JsonKey(fromJson: nullableIntFromJson) int? batteryPct,
+    @JsonKey(fromJson: nullableIntFromJson) int? wifiRssi,
     DateTime? lastSeen,
     bool isOnline,
     DateTime? createdAt,
@@ -148,8 +150,8 @@ abstract class _$$CollarImplCopyWith<$Res> implements $CollarCopyWith<$Res> {
     String? farmId,
     String? animalId,
     String? firmwareVersion,
-    int? batteryPct,
-    int? wifiRssi,
+    @JsonKey(fromJson: nullableIntFromJson) int? batteryPct,
+    @JsonKey(fromJson: nullableIntFromJson) int? wifiRssi,
     DateTime? lastSeen,
     bool isOnline,
     DateTime? createdAt,
@@ -238,8 +240,8 @@ class _$CollarImpl implements _Collar {
     this.farmId,
     this.animalId,
     this.firmwareVersion,
-    this.batteryPct,
-    this.wifiRssi,
+    @JsonKey(fromJson: nullableIntFromJson) this.batteryPct,
+    @JsonKey(fromJson: nullableIntFromJson) this.wifiRssi,
     this.lastSeen,
     this.isOnline = false,
     this.createdAt,
@@ -259,8 +261,10 @@ class _$CollarImpl implements _Collar {
   @override
   final String? firmwareVersion;
   @override
+  @JsonKey(fromJson: nullableIntFromJson)
   final int? batteryPct;
   @override
+  @JsonKey(fromJson: nullableIntFromJson)
   final int? wifiRssi;
   @override
   final DateTime? lastSeen;
@@ -337,8 +341,8 @@ abstract class _Collar implements Collar {
     final String? farmId,
     final String? animalId,
     final String? firmwareVersion,
-    final int? batteryPct,
-    final int? wifiRssi,
+    @JsonKey(fromJson: nullableIntFromJson) final int? batteryPct,
+    @JsonKey(fromJson: nullableIntFromJson) final int? wifiRssi,
     final DateTime? lastSeen,
     final bool isOnline,
     final DateTime? createdAt,
@@ -357,8 +361,10 @@ abstract class _Collar implements Collar {
   @override
   String? get firmwareVersion;
   @override
+  @JsonKey(fromJson: nullableIntFromJson)
   int? get batteryPct;
   @override
+  @JsonKey(fromJson: nullableIntFromJson)
   int? get wifiRssi;
   @override
   DateTime? get lastSeen;

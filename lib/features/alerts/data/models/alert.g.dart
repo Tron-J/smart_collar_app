@@ -14,9 +14,9 @@ _$AlertImpl _$$AlertImplFromJson(Map<String, dynamic> json) => _$AlertImpl(
   alertType: $enumDecode(_$AlertTypeEnumMap, json['alert_type']),
   severity: $enumDecode(_$AlertSeverityEnumMap, json['severity']),
   message: json['message'] as String,
-  tempAtAlert: (json['temp_at_alert'] as num?)?.toDouble(),
-  hrAtAlert: (json['hr_at_alert'] as num?)?.toInt(),
-  riskScore: (json['risk_score'] as num?)?.toInt(),
+  tempAtAlert: nullableDoubleFromJson(json['temp_at_alert']),
+  hrAtAlert: nullableIntFromJson(json['hr_at_alert']),
+  riskScore: nullableIntFromJson(json['risk_score']),
   isResolved: json['is_resolved'] as bool,
   resolvedAt: json['resolved_at'] == null
       ? null

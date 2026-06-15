@@ -35,7 +35,7 @@ https://your-backend.example.com/manufacturer/
 The page lists unpaired collars and generates a QR payload in this format:
 
 ```text
-smartcollar://app/pair-collar?device_id=COLLAR_DEVICE_ID
+smartcollar://app/add-animal?device_id=COLLAR_DEVICE_ID
 ```
 
 Farmers can scan that code in the mobile app to pair the collar. If a farmer disconnects a collar, `farm_id` and `animal_id` are cleared so the collar can be paired by another account.

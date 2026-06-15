@@ -1,6 +1,7 @@
 // ignore_for_file: invalid_annotation_target
 
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:smart_collar_app/core/utils/json_converters.dart';
 
 part 'collar.freezed.dart';
 part 'collar.g.dart';
@@ -14,8 +15,8 @@ class Collar with _$Collar {
     String? farmId,
     String? animalId,
     String? firmwareVersion,
-    int? batteryPct,
-    int? wifiRssi,
+    @JsonKey(fromJson: nullableIntFromJson) int? batteryPct,
+    @JsonKey(fromJson: nullableIntFromJson) int? wifiRssi,
     DateTime? lastSeen,
     @Default(false) bool isOnline,
     DateTime? createdAt,

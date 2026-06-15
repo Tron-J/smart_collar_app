@@ -1,6 +1,8 @@
 class ApiEndpoints {
   static const String farms = '/farms';
   static String farmAnimals(String farmId) => '/farms/$farmId/animals';
+  static String farmAnimalWithCollar(String farmId) =>
+      '/farms/$farmId/animals-with-collar';
   static String animalById(String animalId) => '/animals/$animalId';
   static String farmCollars(String farmId) => '/farms/$farmId/collars';
   static const String collarsPair = '/collars/pair';

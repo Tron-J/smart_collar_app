@@ -68,6 +68,41 @@ class OnboardingRepository {
     }
   }
 
+  Future<AnimalCollarRegistration> createAnimalWithCollar({
+    required String farmId,
+    required String animalTag,
+    required String species,
+    required String sex,
+    int? ageMonths,
+    double? weightKg,
+    required String deviceId,
+  }) async {
+    try {
+      final payload = <String, dynamic>{
+        'animal_tag': animalTag.trim(),
+        'species': species,
+        'sex': sex,
+        'device_id': deviceId.trim(),
+      };
+      if (ageMonths != null) payload['age_months'] = ageMonths;
+      if (weightKg != null) payload['weight_kg'] = weightKg;
+
+      final response = await _api.dio.post(
+        ApiEndpoints.farmAnimalWithCollar(farmId),
+        data: payload,
+      );
+      final object = _extractObject(response.data);
+      return AnimalCollarRegistration(
+        animal: Animal.fromJson(object['animal'] as Map<String, dynamic>),
+        collar: Collar.fromJson(object['collar'] as Map<String, dynamic>),
+      );
+    } on DioException catch (error) {
+      throw ApiException(
+        _messageFromDio(error, 'Failed to register animal and collar'),
+      );
+    }
+  }
+
   Future<Collar> pairCollar({
     required String deviceId,
     required String farmId,
@@ -113,4 +148,11 @@ class OnboardingRepository {
     }
     return error.message ?? fallback;
   }
+}
+
+class AnimalCollarRegistration {
+  const AnimalCollarRegistration({required this.animal, required this.collar});
+
+  final Animal animal;
+  final Collar collar;
 }
