@@ -27,7 +27,7 @@ class _HerdScreenState extends ConsumerState<HerdScreen> {
         Text('Herd', style: Theme.of(context).textTheme.headlineMedium),
         const SizedBox(height: 6),
         Text(
-          'Search and manage monitored animals.',
+          'Search and manage animals by collar ID.',
           style: Theme.of(
             context,
           ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
@@ -36,7 +36,7 @@ class _HerdScreenState extends ConsumerState<HerdScreen> {
         TextField(
           decoration: const InputDecoration(
             prefixIcon: Icon(Icons.search),
-            hintText: 'Search tag or species',
+            hintText: 'Search collar ID or species',
           ),
           onChanged: (value) => setState(() => _query = value.toLowerCase()),
         ),

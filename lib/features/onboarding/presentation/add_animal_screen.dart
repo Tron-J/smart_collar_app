@@ -18,7 +18,6 @@ class AddAnimalScreen extends ConsumerStatefulWidget {
 
 class _AddAnimalScreenState extends ConsumerState<AddAnimalScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _tagController = TextEditingController();
   final _ageController = TextEditingController();
   final _weightController = TextEditingController();
   final _deviceIdController = TextEditingController();
@@ -37,7 +36,6 @@ class _AddAnimalScreenState extends ConsumerState<AddAnimalScreen> {
 
   @override
   void dispose() {
-    _tagController.dispose();
     _ageController.dispose();
     _weightController.dispose();
     _deviceIdController.dispose();
@@ -70,20 +68,12 @@ class _AddAnimalScreenState extends ConsumerState<AddAnimalScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Add the animal details and the collar ID it will wear.',
+                  'Use the collar ID to identify this animal and connect its live readings.',
                   style: Theme.of(
                     context,
                   ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
                 ),
                 const SizedBox(height: 24),
-                TextFormField(
-                  controller: _tagController,
-                  decoration: const InputDecoration(labelText: 'Animal tag ID'),
-                  validator: (value) => value == null || value.isEmpty
-                      ? 'Animal tag required'
-                      : null,
-                ),
-                const SizedBox(height: 16),
                 _SegmentedRow(
                   label: 'Species',
                   value: _species,
@@ -141,7 +131,6 @@ class _AddAnimalScreenState extends ConsumerState<AddAnimalScreen> {
                               await ref
                                   .read(onboardingControllerProvider.notifier)
                                   .createAnimalWithCollar(
-                                    animalTag: _tagController.text,
                                     species: _species,
                                     sex: _sex,
                                     ageMonths: int.tryParse(

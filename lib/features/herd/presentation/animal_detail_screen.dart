@@ -19,7 +19,7 @@ class AnimalDetailScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(20),
       children: [
         Text(
-          'Animal detail',
+          'Collar animal detail',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: 16),

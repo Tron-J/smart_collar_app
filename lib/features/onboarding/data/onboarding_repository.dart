@@ -70,7 +70,6 @@ class OnboardingRepository {
 
   Future<AnimalCollarRegistration> createAnimalWithCollar({
     required String farmId,
-    required String animalTag,
     required String species,
     required String sex,
     int? ageMonths,
@@ -79,7 +78,6 @@ class OnboardingRepository {
   }) async {
     try {
       final payload = <String, dynamic>{
-        'animal_tag': animalTag.trim(),
         'species': species,
         'sex': sex,
         'device_id': deviceId.trim(),

@@ -111,7 +111,6 @@ class OnboardingController extends StateNotifier<AsyncValue<OnboardingState>> {
   }
 
   Future<AnimalCollarRegistration> createAnimalWithCollar({
-    required String animalTag,
     required String species,
     required String sex,
     int? ageMonths,
@@ -129,7 +128,6 @@ class OnboardingController extends StateNotifier<AsyncValue<OnboardingState>> {
     try {
       final registration = await _repository.createAnimalWithCollar(
         farmId: farmId,
-        animalTag: animalTag,
         species: species,
         sex: sex,
         ageMonths: ageMonths,

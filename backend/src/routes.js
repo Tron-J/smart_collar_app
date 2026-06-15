@@ -174,7 +174,6 @@ router.post('/farms/:farmId/animals-with-collar', async (req, res, next) => {
   const client = await pool.connect();
   try {
     const {
-      animal_tag,
       species,
       sex,
       age_months,
@@ -183,9 +182,10 @@ router.post('/farms/:farmId/animals-with-collar', async (req, res, next) => {
       device_id
     } = req.body;
 
-    if (!animal_tag || !species || !sex || !device_id) {
+    if (!species || !sex || !device_id) {
       return res.status(400).json({ message: 'Animal details and collar ID are required' });
     }
+    const deviceId = device_id.trim();
 
     await client.query('BEGIN');
 
@@ -202,7 +202,7 @@ router.post('/farms/:farmId/animals-with-collar', async (req, res, next) => {
 
     const existingCollar = firstRow(
       await client.query('SELECT * FROM collars WHERE device_id = $1 FOR UPDATE', [
-        device_id.trim()
+        deviceId
       ])
     );
     if (existingCollar?.farm_id && existingCollar.farm_id !== req.params.farmId) {
@@ -217,7 +217,7 @@ router.post('/farms/:farmId/animals-with-collar', async (req, res, next) => {
          RETURNING *`,
         [
           req.params.farmId,
-          animal_tag,
+          deviceId,
           species,
           sex,
           age_months ?? null,
@@ -234,13 +234,13 @@ router.post('/farms/:farmId/animals-with-collar', async (req, res, next) => {
              SET farm_id = $1, animal_id = $2
              WHERE device_id = $3
              RETURNING *`,
-            [req.params.farmId, animal.id, device_id.trim()]
+            [req.params.farmId, animal.id, deviceId]
           )
         : await client.query(
             `INSERT INTO collars (device_id, farm_id, animal_id)
              VALUES ($1,$2,$3)
              RETURNING *`,
-            [device_id.trim(), req.params.farmId, animal.id]
+            [deviceId, req.params.farmId, animal.id]
           )
     );
 

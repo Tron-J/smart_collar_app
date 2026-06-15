@@ -173,7 +173,7 @@ class _DashboardHeader extends StatelessWidget {
             color: kAccentPrimary,
             shape: BoxShape.circle,
           ),
-          child: const Icon(Icons.pets_rounded, color: kTextPrimary),
+          child: const Icon(Icons.memory_rounded, color: kTextPrimary),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -361,7 +361,7 @@ class _ConnectCollarGuideCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Your farm is ready. Add one animal and pair its collar to start seeing readings.',
+                      'Your farm is ready. Register an animal with its collar ID to start seeing readings.',
                       style: Theme.of(
                         context,
                       ).textTheme.bodySmall?.copyWith(color: kTextSecond),
@@ -379,7 +379,7 @@ class _ConnectCollarGuideCard extends StatelessWidget {
           const _GuideStep(
             index: '2',
             text:
-                'Create the animal profile with its tag, species, sex, age, and weight.',
+                'Add the animal details and use its collar ID as the identifier.',
           ),
           const _GuideStep(
             index: '3',

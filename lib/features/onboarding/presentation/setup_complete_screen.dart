@@ -47,10 +47,6 @@ class SetupCompleteScreen extends ConsumerWidget {
               value: state?.farm?.name ?? 'Current farm',
             ),
             _SummaryRow(
-              label: 'Animal tag',
-              value: state?.animal?.animalTag ?? 'Registered animal',
-            ),
-            _SummaryRow(
               label: 'Collar ID',
               value: state?.collar?.deviceId ?? 'Paired collar',
             ),
