@@ -6,15 +6,10 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthSession {
-  const AuthSession({
-    required this.token,
-    this.user,
-    this.requiresOnboarding = true,
-  });
+  const AuthSession({required this.token, this.user});
 
   final String token;
   final UserModel? user;
-  final bool requiresOnboarding;
 }
 
 class AuthRepository {
@@ -123,7 +118,6 @@ class AuthRepository {
         phone: metadata['phone'] as String?,
         createdAt: DateTime.tryParse(user.createdAt),
       ),
-      requiresOnboarding: true,
     );
   }
 }

@@ -10,14 +10,19 @@ class WebSocketService {
   WebSocketChannel? _channel;
   String? _token;
   Timer? _reconnectTimer;
+  Timer? _heartbeatTimer;
   int _attempt = 0;
   bool _closedByUser = false;
+  void Function()? _onConnected;
   final _controller = StreamController<Map<String, dynamic>>.broadcast();
+
+  static const _heartbeatInterval = Duration(seconds: 30);
 
   Stream<Map<String, dynamic>> get stream => _controller.stream;
 
-  void connect(String token) {
+  void connect(String token, {void Function()? onConnected}) {
     _token = token;
+    _onConnected = onConnected;
     _closedByUser = false;
     final uri = Uri.parse('$baseUrl?token=$token');
     _channel = WebSocketChannel.connect(uri);
@@ -34,24 +39,42 @@ class WebSocketService {
       onError: (_) => _scheduleReconnect(),
       onDone: _scheduleReconnect,
     );
+    _startHeartbeat();
+    _onConnected?.call();
   }
 
   void disconnect() {
     _closedByUser = true;
     _reconnectTimer?.cancel();
+    _heartbeatTimer?.cancel();
     _channel?.sink.close();
     _channel = null;
+  }
+
+  void send(Map<String, dynamic> message) {
+    if (_channel != null) {
+      _channel?.sink.add(json.encode(message));
+    }
+  }
+
+  void _startHeartbeat() {
+    _heartbeatTimer?.cancel();
+    _heartbeatTimer = Timer.periodic(_heartbeatInterval, (_) {
+      send({'type': 'ping'});
+    });
   }
 
   void _scheduleReconnect() {
     if (_closedByUser || _token == null || baseUrl.trim().isEmpty) return;
     _reconnectTimer?.cancel();
+    _heartbeatTimer?.cancel();
     final seconds = (1 << _attempt).clamp(1, 30);
     _attempt = (_attempt + 1).clamp(0, 5);
     _reconnectTimer = Timer(Duration(seconds: seconds), () {
       final token = _token;
+      final onConnected = _onConnected;
       if (token != null && !_closedByUser) {
-        connect(token);
+        connect(token, onConnected: onConnected);
       }
     });
   }

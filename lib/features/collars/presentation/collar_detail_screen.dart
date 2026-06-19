@@ -10,6 +10,8 @@ import 'package:smart_collar_app/features/dashboard/presentation/widgets/ppr_ris
 import 'package:smart_collar_app/features/dashboard/presentation/widgets/sensor_card.dart';
 import 'package:smart_collar_app/features/dashboard/presentation/widgets/temp_chart_widget.dart';
 import 'package:smart_collar_app/features/dashboard/providers/live_readings_provider.dart';
+import 'package:smart_collar_app/features/dashboard/providers/realtime_refresh_provider.dart';
+import 'package:smart_collar_app/features/dashboard/providers/websocket_provider.dart';
 import 'package:smart_collar_app/features/herd/providers/herd_provider.dart';
 import 'package:smart_collar_app/features/onboarding/data/models/collar.dart';
 import 'package:smart_collar_app/shared/widgets/error_view.dart';
@@ -23,6 +25,11 @@ class CollarDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen(realtimeRefreshTickProvider, (_, _) {
+      invalidateRealtimeFarmData(ref);
+    });
+    ref.watch(websocketStreamProvider);
+    ref.watch(farmLatestReadingsProvider);
     final collarsValue = ref.watch(farmCollarsProvider);
     final readingsState = ref.watch(liveReadingsProvider);
     final reading = readingsState.latestByCollar[collarId];
@@ -53,95 +60,101 @@ class CollarDetailScreen extends ConsumerWidget {
           return const _MissingCollarState();
         }
 
-        return ListView(
-          padding: const EdgeInsets.all(20),
-          children: [
-            Row(
-              children: [
-                IconButton(
-                  onPressed: () {
-                    if (context.canPop()) {
-                      context.pop();
-                    } else {
-                      context.go('/collars');
-                    }
-                  },
-                  icon: const Icon(Icons.arrow_back_rounded),
-                ),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        collar.deviceId,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      Text(
-                        'Animal ${collar.animalId ?? 'not assigned'}',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodySmall?.copyWith(color: kTextSecond),
-                      ),
-                    ],
+        return RefreshIndicator(
+          color: kAccentPrimary,
+          backgroundColor: kBgCard,
+          onRefresh: () => refreshRealtimeFarmData(ref),
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      if (context.canPop()) {
+                        context.pop();
+                      } else {
+                        context.go('/collars');
+                      }
+                    },
+                    icon: const Icon(Icons.arrow_back_rounded),
                   ),
-                ),
-                StatusBadge(
-                  label: collar.isOnline ? 'Online' : 'Offline',
-                  color: collar.isOnline ? kAccentPrimary : kTextMuted,
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _CollarStatusRow(collar: collar),
-            const SizedBox(height: 16),
-            _AnimalStateCard(reading: reading),
-            const SizedBox(height: 16),
-            PprRiskCard(score: reading?.pprRiskScore),
-            const SizedBox(height: 20),
-            Text(
-              'Collar readings',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 12),
-            SensorCard(
-              title: 'Pulse',
-              subtitle: 'Heart health',
-              value: reading?.heartRateBpm,
-              unit: 'bpm',
-              detail: 'Pulse trend for this animal',
-              chart: HrChartWidget(readings: recent),
-            ),
-            const SizedBox(height: 12),
-            SensorCard(
-              title: 'Body Temperature',
-              subtitle: 'Health check',
-              value: reading?.tempC,
-              unit: 'C',
-              detail: 'Normal range 38.5-39.7 C',
-              chart: TempChartWidget(readings: recent),
-            ),
-            const SizedBox(height: 12),
-            SensorCard(
-              title: 'Movement',
-              subtitle: 'Behavior signal',
-              value: reading?.activityIndex,
-              unit: '%',
-              detail: animalStateDetail(reading),
-              chart: const ActivityBarWidget(),
-            ),
-            const SizedBox(height: 20),
-            OutlinedButton.icon(
-              onPressed: () => _confirmDisconnect(context, ref, collar),
-              icon: const Icon(Icons.link_off_rounded),
-              label: const Text('Disconnect collar'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: kDanger,
-                side: const BorderSide(color: kDanger),
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          collar.deviceId,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        Text(
+                          'Animal ${collar.animalId ?? 'not assigned'}',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(color: kTextSecond),
+                        ),
+                      ],
+                    ),
+                  ),
+                  StatusBadge(
+                    label: collar.isOnline ? 'Online' : 'Offline',
+                    color: collar.isOnline ? kAccentPrimary : kTextMuted,
+                  ),
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              _CollarStatusRow(collar: collar),
+              const SizedBox(height: 16),
+              _AnimalStateCard(reading: reading),
+              const SizedBox(height: 16),
+              PprRiskCard(score: reading?.pprRiskScore),
+              const SizedBox(height: 20),
+              Text(
+                'Collar readings',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 12),
+              SensorCard(
+                title: 'Pulse',
+                subtitle: 'Heart health',
+                value: reading?.heartRateBpm,
+                unit: 'bpm',
+                detail: 'Pulse trend for this animal',
+                chart: HrChartWidget(readings: recent),
+              ),
+              const SizedBox(height: 12),
+              SensorCard(
+                title: 'Body Temperature',
+                subtitle: 'Health check',
+                value: reading?.tempC,
+                unit: 'C',
+                detail: 'Normal range 38.5-39.7 C',
+                chart: TempChartWidget(readings: recent),
+              ),
+              const SizedBox(height: 12),
+              SensorCard(
+                title: 'Movement',
+                subtitle: 'Behavior signal',
+                value: reading?.activityIndex,
+                unit: '%',
+                detail: animalStateDetail(reading),
+                chart: const ActivityBarWidget(),
+              ),
+              const SizedBox(height: 20),
+              OutlinedButton.icon(
+                onPressed: () => _confirmDisconnect(context, ref, collar),
+                icon: const Icon(Icons.link_off_rounded),
+                label: const Text('Disconnect collar'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: kDanger,
+                  side: const BorderSide(color: kDanger),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+              ),
+            ],
+          ),
         );
       },
     );

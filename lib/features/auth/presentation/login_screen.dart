@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
 import 'package:smart_collar_app/features/auth/providers/auth_provider.dart';
+import 'package:smart_collar_app/features/onboarding/providers/onboarding_provider.dart';
 import 'package:smart_collar_app/shared/widgets/smart_collar_scaffold.dart';
 import 'package:smart_collar_app/shared/widgets/primary_button.dart';
 
@@ -19,6 +20,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _passwordController = TextEditingController();
   String? _errorMessage;
   bool _obscure = true;
+  bool _isRouting = false;
 
   @override
   void dispose() {
@@ -30,7 +32,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
-    final isLoading = authState.isLoading;
+    final isLoading = authState.isLoading || _isRouting;
 
     return SmartCollarScaffold(
       appBar: AppBar(
@@ -108,18 +110,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         if (_formKey.currentState?.validate() ?? false) {
                           setState(() => _errorMessage = null);
                           try {
-                            final session = await ref
+                            await ref
                                 .read(authControllerProvider.notifier)
                                 .login(
                                   email: _emailController.text,
                                   password: _passwordController.text,
                                 );
                             if (!context.mounted) return;
-                            context.go(
-                              session.requiresOnboarding
-                                  ? '/farm-setup'
-                                  : '/dashboard',
-                            );
+                            await _goToNextStep();
                           } catch (error) {
                             if (!mounted) return;
                             setState(() => _errorMessage = error.toString());
@@ -132,5 +130,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _goToNextStep() async {
+    if (_isRouting) return;
+    setState(() {
+      _isRouting = true;
+      _errorMessage = null;
+    });
+
+    try {
+      ref.invalidate(userFarmsProvider);
+      ref.invalidate(completedFarmProvider);
+      final farm = await ref.read(completedFarmProvider.future);
+      if (!mounted) return;
+      context.go(farm == null ? '/farm-setup' : '/dashboard');
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _errorMessage = error.toString());
+    } finally {
+      if (mounted) {
+        setState(() => _isRouting = false);
+      }
+    }
   }
 }

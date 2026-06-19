@@ -10,6 +10,7 @@ import 'package:smart_collar_app/features/dashboard/presentation/widgets/ppr_ris
 import 'package:smart_collar_app/features/dashboard/presentation/widgets/sensor_card.dart';
 import 'package:smart_collar_app/features/dashboard/presentation/widgets/temp_chart_widget.dart';
 import 'package:smart_collar_app/features/dashboard/providers/live_readings_provider.dart';
+import 'package:smart_collar_app/features/dashboard/providers/realtime_refresh_provider.dart';
 import 'package:smart_collar_app/features/dashboard/providers/websocket_provider.dart';
 import 'package:smart_collar_app/features/herd/providers/herd_provider.dart';
 import 'package:smart_collar_app/features/onboarding/data/models/collar.dart';
@@ -60,6 +61,9 @@ class _DashboardContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen(realtimeRefreshTickProvider, (_, _) {
+      invalidateRealtimeFarmData(ref);
+    });
     ref.watch(websocketStreamProvider);
     ref.watch(farmLatestReadingsProvider);
     final readingsState = ref.watch(liveReadingsProvider);
@@ -76,61 +80,67 @@ class _DashboardContent extends ConsumerWidget {
         ? 'Waiting for data'
         : 'Live now';
 
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        _DashboardHeader(
-          isConnected: readingsState.isConnected,
-          batteryPct: averageBattery,
-          wifiRssi: averageWifi,
-          updatedLabel: updatedLabel,
-          collarCount: readingsState.latestByCollar.length,
-        ),
-        const SizedBox(height: 16),
-        collarsValue.when(
-          loading: () => const SizedBox.shrink(),
-          error: (_, _) => const SizedBox.shrink(),
-          data: (collars) => collars.isEmpty
-              ? const _ConnectCollarGuideCard()
-              : const SizedBox.shrink(),
-        ),
-        const SizedBox(height: 16),
-        _FarmSummaryCard(readings: collarReadings),
-        const SizedBox(height: 16),
-        PprRiskCard(score: averageRisk),
-        const SizedBox(height: 20),
-        Text(
-          'Farm cumulative readings',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        const SizedBox(height: 12),
-        SensorCard(
-          title: 'Average Pulse',
-          subtitle: 'Farm average',
-          value: averagePulse,
-          unit: 'bpm',
-          detail: 'Average pulse from animals with active collars',
-          chart: HrChartWidget(readings: readingsState.recent),
-        ),
-        const SizedBox(height: 12),
-        SensorCard(
-          title: 'Average Body Temperature',
-          subtitle: 'Farm average',
-          value: averageTemp,
-          unit: 'C',
-          detail: 'Average body temperature from active collars',
-          chart: TempChartWidget(readings: readingsState.recent),
-        ),
-        const SizedBox(height: 12),
-        SensorCard(
-          title: 'Average Movement',
-          subtitle: 'Behavior signal',
-          value: averageActivity,
-          unit: '%',
-          detail: 'Used to estimate grazing, sleeping, and resting',
-          chart: const ActivityBarWidget(),
-        ),
-      ],
+    return RefreshIndicator(
+      color: kAccentPrimary,
+      backgroundColor: kBgCard,
+      onRefresh: () => refreshRealtimeFarmData(ref),
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(20),
+        children: [
+          _DashboardHeader(
+            isConnected: readingsState.isConnected,
+            batteryPct: averageBattery,
+            wifiRssi: averageWifi,
+            updatedLabel: updatedLabel,
+            collarCount: readingsState.latestByCollar.length,
+          ),
+          const SizedBox(height: 16),
+          collarsValue.when(
+            loading: () => const SizedBox.shrink(),
+            error: (_, _) => const SizedBox.shrink(),
+            data: (collars) => collars.isEmpty
+                ? const _ConnectCollarGuideCard()
+                : const SizedBox.shrink(),
+          ),
+          const SizedBox(height: 16),
+          _FarmSummaryCard(readings: collarReadings),
+          const SizedBox(height: 16),
+          PprRiskCard(score: averageRisk),
+          const SizedBox(height: 20),
+          Text(
+            'Farm cumulative readings',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+          SensorCard(
+            title: 'Average Pulse',
+            subtitle: 'Farm average',
+            value: averagePulse,
+            unit: 'bpm',
+            detail: 'Average pulse from animals with active collars',
+            chart: HrChartWidget(readings: readingsState.recent),
+          ),
+          const SizedBox(height: 12),
+          SensorCard(
+            title: 'Average Body Temperature',
+            subtitle: 'Farm average',
+            value: averageTemp,
+            unit: 'C',
+            detail: 'Average body temperature from active collars',
+            chart: TempChartWidget(readings: readingsState.recent),
+          ),
+          const SizedBox(height: 12),
+          SensorCard(
+            title: 'Average Movement',
+            subtitle: 'Behavior signal',
+            value: averageActivity,
+            unit: '%',
+            detail: 'Used to estimate grazing, sleeping, and resting',
+            chart: const ActivityBarWidget(),
+          ),
+        ],
+      ),
     );
   }
 

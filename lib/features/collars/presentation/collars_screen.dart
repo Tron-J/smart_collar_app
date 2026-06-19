@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
+import 'package:smart_collar_app/features/dashboard/providers/realtime_refresh_provider.dart';
 import 'package:smart_collar_app/features/herd/providers/herd_provider.dart';
 import 'package:smart_collar_app/features/onboarding/data/models/collar.dart';
 import 'package:smart_collar_app/shared/widgets/primary_button.dart';
@@ -14,48 +15,57 @@ class CollarsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen(realtimeRefreshTickProvider, (_, _) {
+      invalidateRealtimeFarmData(ref);
+    });
     final collarsValue = ref.watch(farmCollarsProvider);
 
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        Text('Collars', style: Theme.of(context).textTheme.headlineMedium),
-        const SizedBox(height: 6),
-        Text(
-          'Farm collars and their latest device status.',
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
-        ),
-        const SizedBox(height: 16),
-        PrimaryButton.filled(
-          label: 'Add animal and collar',
-          onPressed: () => context.push('/add-animal'),
-        ),
-        const SizedBox(height: 16),
-        collarsValue.when(
-          loading: () => const LoadingShimmer(height: 220),
-          error: (error, _) => ErrorView(
-            message: error.toString(),
-            onRetry: () => ref.invalidate(farmCollarsProvider),
+    return RefreshIndicator(
+      color: kAccentPrimary,
+      backgroundColor: kBgCard,
+      onRefresh: () => refreshRealtimeFarmData(ref),
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(20),
+        children: [
+          Text('Collars', style: Theme.of(context).textTheme.headlineMedium),
+          const SizedBox(height: 6),
+          Text(
+            'Farm collars and their latest device status.',
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
           ),
-          data: (collars) {
-            if (collars.isEmpty) {
-              return const _EmptyCollarsState();
-            }
-            return Column(
-              children: collars
-                  .map(
-                    (collar) => _CollarCard(
-                      collar: collar,
-                      onTap: () => context.push('/collars/${collar.id}'),
-                    ),
-                  )
-                  .toList(),
-            );
-          },
-        ),
-      ],
+          const SizedBox(height: 16),
+          PrimaryButton.filled(
+            label: 'Add animal and collar',
+            onPressed: () => context.push('/add-animal'),
+          ),
+          const SizedBox(height: 16),
+          collarsValue.when(
+            loading: () => const LoadingShimmer(height: 220),
+            error: (error, _) => ErrorView(
+              message: error.toString(),
+              onRetry: () => ref.invalidate(farmCollarsProvider),
+            ),
+            data: (collars) {
+              if (collars.isEmpty) {
+                return const _EmptyCollarsState();
+              }
+              return Column(
+                children: collars
+                    .map(
+                      (collar) => _CollarCard(
+                        collar: collar,
+                        onTap: () => context.push('/collars/${collar.id}'),
+                      ),
+                    )
+                    .toList(),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

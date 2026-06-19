@@ -2,11 +2,20 @@ import express from 'express';
 import { requireAuth } from './auth.js';
 import { config } from './config.js';
 import { firstRow, pool, query } from './db.js';
+import { getMqttStatus } from './mqttWorker.js';
 
 export const router = express.Router();
 
 router.get('/health', (_req, res) => {
-  res.json({ ok: true });
+  res.json({ ok: true, mqtt: getMqttStatus() });
+});
+
+router.get('/health/mqtt', (_req, res) => {
+  const mqtt = getMqttStatus();
+  res.status(mqtt.isConnected && mqtt.isSubscribed ? 200 : 503).json({
+    ok: mqtt.isConnected && mqtt.isSubscribed,
+    data: mqtt
+  });
 });
 
 router.get('/health/db', async (_req, res, next) => {

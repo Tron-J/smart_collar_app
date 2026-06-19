@@ -41,7 +41,14 @@ class LiveReadingsNotifier extends StateNotifier<ReadingsState> {
   LiveReadingsNotifier() : super(const ReadingsState());
 
   void updateReading(SensorReading reading) {
-    final updatedRecent = [...state.recent, reading];
+    final alreadyRecorded = state.recent.any(
+      (item) =>
+          item.collarId == reading.collarId &&
+          item.recordedAt.isAtSameMomentAs(reading.recordedAt),
+    );
+    final updatedRecent = alreadyRecorded
+        ? state.recent
+        : [...state.recent, reading];
     final updatedLatestByCollar = {
       ...state.latestByCollar,
       reading.collarId: reading,
@@ -54,6 +61,21 @@ class LiveReadingsNotifier extends StateNotifier<ReadingsState> {
       latestByCollar: updatedLatestByCollar,
       lastUpdated: DateTime.now(),
     );
+  }
+
+  void updateFarmReadings(List<SensorReading> readings) {
+    if (readings.isEmpty) {
+      state = state.copyWith(
+        isConnected: false,
+        lastUpdated: DateTime.now(),
+      );
+      return;
+    }
+
+    for (final reading in readings) {
+      updateReading(reading);
+    }
+    state = state.copyWith(isConnected: true, lastUpdated: DateTime.now());
   }
 
   void setConnection(bool isConnected) {
@@ -96,7 +118,6 @@ final farmLatestReadingsProvider = FutureProvider<List<SensorReading>>((
     try {
       final reading = await repository.fetchLatestReading(animal.id);
       if (reading != null) {
-        ref.read(liveReadingsProvider.notifier).updateReading(reading);
         readings.add(reading);
       }
     } catch (_) {
@@ -104,5 +125,6 @@ final farmLatestReadingsProvider = FutureProvider<List<SensorReading>>((
     }
   }
 
+  ref.read(liveReadingsProvider.notifier).updateFarmReadings(readings);
   return readings;
 });

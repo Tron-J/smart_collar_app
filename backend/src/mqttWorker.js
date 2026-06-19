@@ -1,31 +1,89 @@
+
 import mqtt from 'mqtt';
 import { config } from './config.js';
 import { firstRow, query } from './db.js';
 import { evaluateAlerts, getThreshold } from './alerts.js';
 import { broadcastToFarm } from './wsHub.js';
 
+const mqttStatus = {
+  configuredUrl: config.mqttUrl,
+  isConnected: false,
+  isSubscribed: false,
+  lastConnectedAt: null,
+  lastMessageAt: null,
+  lastMessageCount: 0,
+  lastError: null
+};
+
+export function getMqttStatus() {
+  return { ...mqttStatus };
+}
+
 export function startMqttWorker() {
+  console.log(`[MQTT] Connecting to ${config.mqttUrl}...`);
+
   const client = mqtt.connect(config.mqttUrl, {
     username: config.mqttUsername,
     password: config.mqttPassword,
-    reconnectPeriod: 5000
+    reconnectPeriod: 5000,
+    connectTimeout: 10000,
+    clean: true
   });
 
   client.on('connect', () => {
-    client.subscribe(['collars/+/telemetry', 'collars/+/status']);
+    mqttStatus.isConnected = true;
+    mqttStatus.lastConnectedAt = new Date().toISOString();
+    mqttStatus.lastError = null;
+    console.log('[MQTT] Connected successfully');
+
+    client.subscribe(['collars/+/telemetry', 'collars/+/status'], (error) => {
+      mqttStatus.isSubscribed = !error;
+      if (error) {
+        mqttStatus.lastError = error.message;
+        console.error('[MQTT] Subscribe error:', error.message);
+      } else {
+        console.log('[MQTT] Subscribed to topics: collars/+/telemetry, collars/+/status');
+      }
+    });
+  });
+
+  client.on('close', () => {
+    mqttStatus.isConnected = false;
+    mqttStatus.isSubscribed = false;
+    console.log('[MQTT] Connection closed');
+  });
+
+  client.on('offline', () => {
+    mqttStatus.isConnected = false;
+    mqttStatus.isSubscribed = false;
+    console.log('[MQTT] Client is offline');
+  });
+
+  client.on('reconnect', () => {
+    console.log('[MQTT] Attempting to reconnect...');
   });
 
   client.on('error', (error) => {
-    console.error('MQTT connection error', error.message);
+    mqttStatus.lastError = error.message;
+    console.error('[MQTT] Connection error:', error.message);
   });
 
   client.on('message', async (topic, payload) => {
     try {
+      mqttStatus.lastMessageAt = new Date().toISOString();
+      mqttStatus.lastMessageCount++;
       const data = JSON.parse(payload.toString());
+
+      // Log telemetry messages periodically (every 100th message)
+      if (topic.endsWith('/telemetry') && mqttStatus.lastMessageCount % 100 === 0) {
+        console.log(`[MQTT] Telemetry received from ${topic}: temp=${data.temp_c}°C, hr=${data.heart_rate_bpm}bpm`);
+      }
+
       if (topic.endsWith('/telemetry')) await handleTelemetry(topic, data);
       if (topic.endsWith('/status')) await handleStatus(topic, data);
     } catch (error) {
-      console.error('MQTT message failed', error);
+      mqttStatus.lastError = error.message;
+      console.error('[MQTT] Message processing failed:', error.message);
     }
   });
 }
@@ -38,10 +96,12 @@ async function handleTelemetry(topic, data) {
     ])
   );
   if (!collar) {
+    console.log(`[MQTT] Unknown collar device: ${telemetry.device_id} - adding to inventory`);
     await upsertCollarInventory(telemetry);
     return;
   }
   if (!collar.farm_id || !collar.animal_id) {
+    console.log(`[MQTT] Collar ${telemetry.device_id} not assigned to farm/animal`);
     await upsertCollarInventory(telemetry);
     return;
   }
@@ -90,7 +150,10 @@ async function handleTelemetry(topic, data) {
     )
   );
 
+  // Broadcast to all clients subscribed to this farm
   broadcastToFarm(collar.farm_id, { type: 'reading', data: reading });
+
+  // Evaluate alerts
   const threshold = await getThreshold(collar);
   await evaluateAlerts({ collar, reading, threshold });
 }

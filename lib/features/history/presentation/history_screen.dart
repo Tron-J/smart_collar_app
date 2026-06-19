@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
+import 'package:smart_collar_app/features/dashboard/providers/realtime_refresh_provider.dart';
 import 'package:smart_collar_app/features/history/providers/history_provider.dart';
 import 'package:smart_collar_app/shared/widgets/error_view.dart';
 import 'package:smart_collar_app/shared/widgets/loading_shimmer.dart';
@@ -11,83 +12,92 @@ class HistoryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen(realtimeRefreshTickProvider, (_, _) {
+      invalidateRealtimeFarmData(ref);
+    });
     final readingsValue = ref.watch(historyReadingsProvider);
     final range = ref.watch(historyRangeProvider);
 
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        Text('History', style: Theme.of(context).textTheme.headlineMedium),
-        const SizedBox(height: 6),
-        Text(
-          'Temperature, heart rate, activity, and risk trends from the backend.',
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
-        ),
-        const SizedBox(height: 16),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: HistoryRange.values
-              .map(
-                (item) => _RangeChip(
-                  label: _rangeLabel(item),
-                  isActive: item == range,
-                  onTap: () =>
-                      ref.read(historyRangeProvider.notifier).state = item,
-                ),
-              )
-              .toList(),
-        ),
-        const SizedBox(height: 20),
-        readingsValue.when(
-          loading: () => const LoadingShimmer(height: 360),
-          error: (error, _) => ErrorView(
-            message: error.toString(),
-            onRetry: () => ref.invalidate(historyReadingsProvider),
+    return RefreshIndicator(
+      color: kAccentPrimary,
+      backgroundColor: kBgCard,
+      onRefresh: () => refreshRealtimeFarmData(ref),
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(20),
+        children: [
+          Text('History', style: Theme.of(context).textTheme.headlineMedium),
+          const SizedBox(height: 6),
+          Text(
+            'Temperature, heart rate, activity, and risk trends from the backend.',
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: kTextSecond),
           ),
-          data: (readings) {
-            if (readings.isEmpty) {
-              return const _EmptyHistoryState();
-            }
-            return Column(
-              children: [
-                _ChartCard(
-                  title: 'Temperature',
-                  unit: 'C',
-                  color: kAccentPrimary,
-                  values: readings.map((item) => item.tempC).toList(),
-                ),
-                _ChartCard(
-                  title: 'Heart Rate',
-                  unit: 'bpm',
-                  color: kDanger,
-                  values: readings
-                      .map((item) => item.heartRateBpm.toDouble())
-                      .toList(),
-                ),
-                _ChartCard(
-                  title: 'Activity',
-                  unit: '%',
-                  color: kWarning,
-                  values: readings
-                      .map((item) => item.activityIndex.toDouble())
-                      .toList(),
-                ),
-                _ChartCard(
-                  title: 'Risk Score',
-                  unit: '/100',
-                  color: kDanger,
-                  values: readings
-                      .map((item) => item.pprRiskScore.toDouble())
-                      .toList(),
-                ),
-              ],
-            );
-          },
-        ),
-      ],
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: HistoryRange.values
+                .map(
+                  (item) => _RangeChip(
+                    label: _rangeLabel(item),
+                    isActive: item == range,
+                    onTap: () =>
+                        ref.read(historyRangeProvider.notifier).state = item,
+                  ),
+                )
+                .toList(),
+          ),
+          const SizedBox(height: 20),
+          readingsValue.when(
+            loading: () => const LoadingShimmer(height: 360),
+            error: (error, _) => ErrorView(
+              message: error.toString(),
+              onRetry: () => ref.invalidate(historyReadingsProvider),
+            ),
+            data: (readings) {
+              if (readings.isEmpty) {
+                return const _EmptyHistoryState();
+              }
+              return Column(
+                children: [
+                  _ChartCard(
+                    title: 'Temperature',
+                    unit: 'C',
+                    color: kAccentPrimary,
+                    values: readings.map((item) => item.tempC).toList(),
+                  ),
+                  _ChartCard(
+                    title: 'Heart Rate',
+                    unit: 'bpm',
+                    color: kDanger,
+                    values: readings
+                        .map((item) => item.heartRateBpm.toDouble())
+                        .toList(),
+                  ),
+                  _ChartCard(
+                    title: 'Activity',
+                    unit: '%',
+                    color: kWarning,
+                    values: readings
+                        .map((item) => item.activityIndex.toDouble())
+                        .toList(),
+                  ),
+                  _ChartCard(
+                    title: 'Risk Score',
+                    unit: '/100',
+                    color: kDanger,
+                    values: readings
+                        .map((item) => item.pprRiskScore.toDouble())
+                        .toList(),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 

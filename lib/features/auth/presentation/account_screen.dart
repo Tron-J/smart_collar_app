@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:smart_collar_app/core/constants/colors.dart';
 import 'package:smart_collar_app/core/providers/app_services.dart';
 import 'package:smart_collar_app/features/auth/providers/auth_provider.dart';
+import 'package:smart_collar_app/features/onboarding/providers/onboarding_provider.dart';
 import 'package:smart_collar_app/shared/widgets/app_loading_overlay.dart';
 import 'package:smart_collar_app/shared/widgets/smart_collar_scaffold.dart';
 import 'package:smart_collar_app/shared/widgets/primary_button.dart';
@@ -20,6 +21,7 @@ class AccountScreen extends ConsumerStatefulWidget {
 
 class _AccountScreenState extends ConsumerState<AccountScreen> {
   String? _errorMessage;
+  bool _isRouting = false;
   StreamSubscription<AuthState>? _authSubscription;
 
   @override
@@ -45,11 +47,14 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
+    final isLoading = authState.isLoading || _isRouting;
 
     return SmartCollarScaffold(
       body: AppLoadingOverlay(
-        isLoading: authState.isLoading,
-        message: 'Opening Google account selector...',
+        isLoading: isLoading,
+        message: authState.isLoading
+            ? 'Opening Google account selector...'
+            : 'Checking your farm setup...',
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(24),
@@ -103,10 +108,10 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
                   const SizedBox(height: 12),
                 ],
                 PrimaryButton.filled(
-                  label: authState.isLoading
+                  label: isLoading
                       ? 'Opening Google...'
                       : 'Continue with Google',
-                  onPressed: authState.isLoading
+                  onPressed: isLoading
                       ? null
                       : () async {
                           setState(() => _errorMessage = null);
@@ -140,8 +145,32 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
   }
 
   Future<void> _goToNextStep() async {
-    final farmId = await ref.read(secureStorageProvider).readCurrentFarmId();
-    if (!mounted) return;
-    context.go(farmId == null ? '/farm-setup' : '/dashboard');
+    if (_isRouting) return;
+    setState(() {
+      _isRouting = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final farmId = await ref.read(secureStorageProvider).readCurrentFarmId();
+      if (!mounted) return;
+      if (farmId != null) {
+        context.go('/dashboard');
+        return;
+      }
+
+      ref.invalidate(userFarmsProvider);
+      ref.invalidate(completedFarmProvider);
+      final farm = await ref.read(completedFarmProvider.future);
+      if (!mounted) return;
+      context.go(farm == null ? '/farm-setup' : '/dashboard');
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _errorMessage = error.toString());
+    } finally {
+      if (mounted) {
+        setState(() => _isRouting = false);
+      }
+    }
   }
 }
